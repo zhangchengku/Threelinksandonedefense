@@ -69,8 +69,6 @@ public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter>
     Button poi;
     @Bind(R.id.pqi)
     Button pqi;
-    @Bind(R.id.sf)
-    Button sf;
     private AMap aMap = null;
     private RouteSearch routeSearch;
 
