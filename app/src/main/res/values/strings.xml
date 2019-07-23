@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="provincialInvestment">省&#160;&#160;投&#160;&#160;资：</string>
+    <string name="centralinvestment">中央投资：</string>
+    <string name="citymatching">市级配套：</string>
+    <string name="countymatching">县级配套：</string>
+    <string name="villagematching">村镇配套：</string>
+    <string name="completedsquare">已完成平方米&#160;&#160;&#160;&#160;：</string>
+    <string name="incompletesquare">未完成平方米&#160;&#160;&#160;&#160;：</string>
+    <string name="monthinvestment">当月完成投资&#160;&#160;&#160;&#160;：</string>
+    <string name="completedbridge">完成桥梁个数&#160;&#160;&#160;&#160;：</string>
+    <string name="incompletebridge">未完成桥梁个数：</string>
+    <string name="disease_data_uploading_content" formatted="false">共%s条数据，正在上传第%s条</string>
+</resources>

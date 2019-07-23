@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="theme_color">#5282EB</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_black">#000000</color>
+    <color name="funds_bg">#F9F9F9</color>
+    <color name="text_color">#333333</color>
+    <color name="text_notes">#579AFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="green">#71C671</color>
+    <color name="scan_corner_color">#0effc2</color>
+    <color name="halving_line">#ffdedede</color>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/lin"
+        android:text="画线"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <Button
+        android:text="画点"
+        android:id="@+id/poi"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/lin" />
+    <Button
+        android:text="画路况"
+        android:id="@+id/pqi"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/poi" />
+    <Button
+        android:id="@+id/sf"
+        android:text="缩放到指定的经纬度"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/pqi" />
+</RelativeLayout>
