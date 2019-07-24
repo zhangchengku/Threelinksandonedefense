@@ -1,14 +1,9 @@
 package com.threelinksandonedefense.myapplication;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,8 +33,6 @@ import com.threelinksandonedefense.myapplication.code.MyWebView;
 import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteSectionFillingActivity;
 import com.threelinksandonedefense.myapplication.dialog.CommBtnListener;
 import com.threelinksandonedefense.myapplication.dialog.CommNotificationDialog;
-import com.threelinksandonedefense.myapplication.jpush.ExampleUtil;
-import com.threelinksandonedefense.myapplication.jpush.LocalBroadcastManager;
 import com.threelinksandonedefense.myapplication.land.LandActivity;
 import com.threelinksandonedefense.myapplication.monthlyeport.MinePopupWindow;
 import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
@@ -57,8 +50,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.jpush.android.api.JPushInterface;
-import android.content.IntentFilter;
+
 public class MainActivity extends AppCompatActivity {
+
+    public static boolean isForeground = false;
     @Bind(R.id.pro_schedule)
     ContentLoadingProgressBar mProSchedule;
     @Bind(R.id.webview)
@@ -72,36 +67,16 @@ public class MainActivity extends AppCompatActivity {
     private CommNotificationDialog logoutWarmDialog;
     private String userId;
     private String XMID;
-    public static boolean isForeground = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        if (!NotificationManagerCompat.from(MainActivity.this).areNotificationsEnabled()){
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT <  Build.VERSION_CODES.O) {
-                Intent intent = new Intent();
-                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-                intent.putExtra("app_package", MainActivity.this.getPackageName());
-                intent.putExtra("app_uid", MainActivity.this.getApplicationInfo().uid);
-                startActivity(intent);
-            } else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.setData(Uri.parse("package:" + MainActivity.this.getPackageName()));
-                startActivity(intent);
-            } else {
-                Intent localIntent = new Intent();
-                localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                localIntent.setData(Uri.fromParts("package", MainActivity.this.getPackageName(), null));
-                startActivity(localIntent);
-            }
-        }
-        registerMessageReceiver();
+        JPushInterface.init(getApplicationContext());
         //启用数据库
         mWebview.getSettings().setDatabaseEnabled(true);
+
         //设置定位的数据库路径
         String dir = this.getApplicationContext().getDir("Code_Activity", Context.MODE_PRIVATE).getPath();
         mWebview.getSettings().setGeolocationDatabasePath(dir);
@@ -410,44 +385,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    @Override
+    protected void onResume() {
+        isForeground = true;
+        super.onResume();
+    }
+
 
     @Override
     protected void onPause() {
         isForeground = false;
         super.onPause();
-    }
-    private MessageReceiver mMessageReceiver;
-    public static final String MESSAGE_RECEIVED_ACTION = "MESSAGE_RECEIVED_ACTION";
-    public static final String KEY_MESSAGE = "message";
-    public static final String KEY_EXTRAS = "extras";
-    public void registerMessageReceiver() {
-        mMessageReceiver = new MessageReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        filter.addAction(MESSAGE_RECEIVED_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filter);
-    }
-    public class MessageReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
-                    String messge = intent.getStringExtra(KEY_MESSAGE);
-                    String extras = intent.getStringExtra(KEY_EXTRAS);
-                    StringBuilder showMsg = new StringBuilder();
-                    showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
-                    if (!ExampleUtil.isEmpty(extras)) {
-                        showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
-                    }
-                }
-            } catch (Exception e){
-            }
-        }
-    }
-    @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        super.onDestroy();
     }
 }

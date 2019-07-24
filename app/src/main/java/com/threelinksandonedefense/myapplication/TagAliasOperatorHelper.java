@@ -1,9 +1,11 @@
-package com.threelinksandonedefense.myapplication.jpush;
+package com.threelinksandonedefense.myapplication;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
+
+import com.threelinksandonedefense.myapplication.utils.Logger;
 
 import java.util.Locale;
 import java.util.Set;

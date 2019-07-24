@@ -9,7 +9,12 @@ import android.support.annotation.Nullable;
 import com.threelinksandonedefense.myapplication.MainActivity;
 import com.threelinksandonedefense.myapplication.MyApplication;
 import com.threelinksandonedefense.myapplication.R;
+import com.threelinksandonedefense.myapplication.Tadk;
+import com.threelinksandonedefense.myapplication.circleoffriends.CircleoffriendsActivity;
+import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteSectionFillingActivity;
 import com.threelinksandonedefense.myapplication.land.LandActivity;
+import com.threelinksandonedefense.myapplication.map.MapActivity;
+import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
 import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
 import com.threelinksandonedefense.myapplication.utils.Utils;
 
@@ -27,14 +32,6 @@ public class GuideActivity extends MVPBaseActivity<GuideContract.View, GuidePres
         setContentView(R.layout.act_guide);
         initdate();
     }
-    /**
-    * @Title: GuideActivity
-    * @Package com.threelinksandonedefense.myapplication.guide
-    * @Description: (用一句话描述)
-    * @author 张成昆
-    * @date 2019-7-19
-    * @version V1.0
-    */
     private void initdate() {
         handler = new Handler();
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
@@ -52,7 +49,7 @@ public class GuideActivity extends MVPBaseActivity<GuideContract.View, GuidePres
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                        Intent intent = new Intent(GuideActivity.this, MapActivity.class);
                         startActivity(intent);
                         finish();
                     }

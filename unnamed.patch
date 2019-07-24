@@ -1,0 +1,2296 @@
+Index: app/src/main/res/layout/act_map.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/act_map.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/res/layout/act_map.xml	(revision )
+@@ -26,10 +26,4 @@
+         android:layout_width="match_parent"
+         android:layout_height="50dp"
+         android:layout_below="@+id/poi" />
+-    <Button
+-        android:id="@+id/sf"
+-        android:text="缩放到指定的经纬度"
+-        android:layout_width="match_parent"
+-        android:layout_height="50dp"
+-        android:layout_below="@+id/pqi" />
+ </RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/Tadk.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/Tadk.java	(revision )
++++ app/src/main/java/com/threelinksandonedefense/myapplication/Tadk.java	(revision )
+@@ -0,0 +1,145 @@
++package com.threelinksandonedefense.myapplication;
++
++import android.graphics.drawable.Drawable;
++import android.os.Bundle;
++import android.support.annotation.Nullable;
++import android.support.v7.app.AppCompatActivity;
++import android.view.WindowManager;
++import android.widget.EditText;
++import android.widget.LinearLayout;
++import android.widget.RelativeLayout;
++import android.widget.ScrollView;
++import android.widget.TextView;
++
++import com.alibaba.fastjson.JSON;
++import com.lzy.okgo.OkGo;
++import com.lzy.okgo.model.Response;
++import com.threelinksandonedefense.myapplication.callback.StringDialogCallback;
++import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteInitDataBean;
++import com.threelinksandonedefense.myapplication.monthlyeport.MonthGridAdapter;
++
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.Map;
++
++import butterknife.Bind;
++import butterknife.ButterKnife;
++
++
++/**
++ * Created by 张成昆 on 2019-6-24.
++ */
++
++public class Tadk extends AppCompatActivity {
++    @Bind(R.id.go_back)
++    LinearLayout goBack;
++    @Bind(R.id.title)
++    TextView title;
++    @Bind(R.id.hea)
++    RelativeLayout hea;
++    @Bind(R.id.progress_te)
++    TextView progressTe;
++    @Bind(R.id.ed_progress)
++    TextView edProgress;
++    @Bind(R.id.rel_progress)
++    RelativeLayout relProgress;
++    @Bind(R.id.check_te)
++    TextView checkTe;
++    @Bind(R.id.ed_check)
++    TextView edCheck;
++    @Bind(R.id.rel_check)
++    RelativeLayout relCheck;
++    @Bind(R.id.evaluate_te)
++    TextView evaluateTe;
++    @Bind(R.id.ed_evaluate)
++    TextView edEvaluate;
++    @Bind(R.id.rel_evaluate)
++    RelativeLayout relEvaluate;
++    @Bind(R.id.completedbridge_te)
++    TextView completedbridgeTe;
++    @Bind(R.id.ed_completedbridge)
++    EditText edCompletedbridge;
++    @Bind(R.id.rel_completedbridge)
++    RelativeLayout relCompletedbridge;
++    @Bind(R.id.incompletebridge_te)
++    TextView incompletebridgeTe;
++    @Bind(R.id.ed_incompletebridge)
++    EditText edIncompletebridge;
++    @Bind(R.id.rel_incompletebridge)
++    RelativeLayout relIncompletebridge;
++    @Bind(R.id.listview)
++    NoScroolGridView listview;
++    @Bind(R.id.explain_et)
++    EditText explainEt;
++    @Bind(R.id.cai_ji_picture_add_grid)
++    com.threelinksandonedefense.myapplication.utils.NoScroolGridView caiJiPictureAddGrid;
++    @Bind(R.id.disease_custom_edit_item_cjtp_layout)
++    LinearLayout diseaseCustomEditItemCjtpLayout;
++    @Bind(R.id.disease_new_bh_content_layout)
++    LinearLayout diseaseNewBhContentLayout;
++    @Bind(R.id.tttt)
++    TextView tttt;
++    @Bind(R.id.location)
++    LinearLayout location;
++    @Bind(R.id.sx)
++    TextView sx;
++    @Bind(R.id.no_bridge_fw)
++    RelativeLayout noBridgeFw;
++    @Bind(R.id.is_bridge_fw)
++    TextView isBridgeFw;
++    @Bind(R.id.sssss)
++    TextView sssss;
++    @Bind(R.id.gps)
++    RelativeLayout gps;
++    @Bind(R.id.activity_disease_new_scrollview)
++    ScrollView activityDiseaseNewScrollview;
++    @Bind(R.id.save)
++    TextView save;
++    @Bind(R.id.add_log)
++    TextView addLog;
++    @Bind(R.id.lay_foot)
++    LinearLayout layFoot;
++    @Bind(R.id.lay_rel)
++    RelativeLayout layRel;
++
++    private ArrayList<String> mDatas = new ArrayList<>();
++    private ListViewAdapter adapt;
++    private MonthGridAdapter monthGridAdapter;
++    private Map<Integer, MonthGridAdapter> mapAdapter = new HashMap<>();
++    @Override
++    protected void onCreate(@Nullable Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        setContentView(R.layout.act_task);
++        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
++        ButterKnife.bind(this);
++        mDatas.add("1");
++        mDatas.add("1");
++        mDatas.add("1");
++        adapt = new ListViewAdapter(this, mDatas);
++        listview.setAdapter(adapt);
++        title.setText("现场采集");
++        ArrayList<Drawable> listPicture = new ArrayList<>();
++        ArrayList<String> listImgUrl = new ArrayList<>();
++        Drawable addPicture = getResources().getDrawable(R.drawable.add);
++        listPicture.add(addPicture);
++        final int childPosition = layRel.getChildCount();
++        monthGridAdapter = new MonthGridAdapter(this, listPicture, listImgUrl, childPosition);
++        caiJiPictureAddGrid.setAdapter(monthGridAdapter);
++        mapAdapter.put(childPosition, monthGridAdapter);
++        OkGo.<String>get("http://106.37.229.146:4148/JLTH/InitZljy")
++                .params("uid", "00000000-0000-0000-0000-000000000000")
++                .execute(new StringDialogCallback(Tadk.this) {
++                    @Override
++                    public void onSuccess(Response<String> response) {
++//                        CompleteInitDataBean initDataBean = JSON.parseObject(response.body(),CompleteInitDataBean.class);
++//                        if (mView == null)
++//                            return;
++//                        if (initDataBean.getSTATE().equals("1")){
++//                            mView.getData(initDataBean.getDATA().get(0));
++//                        }else {
++//                            mView.onRequestError(initDataBean.getMSG());
++//                        }
++                    }
++                });
++    }
++}
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/ExampleUtil.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/ExampleUtil.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/ExampleUtil.java	(revision )
+@@ -1,4 +1,4 @@
+-package com.threelinksandonedefense.myapplication.jpush;
++package com.threelinksandonedefense.myapplication;
+ 
+ import android.content.Context;
+ import android.content.pm.ApplicationInfo;
+@@ -13,6 +13,8 @@
+ import android.text.TextUtils;
+ import android.widget.Toast;
+ 
++import com.threelinksandonedefense.myapplication.utils.Logger;
++
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+@@ -71,7 +73,7 @@
+         }
+         return appKey;
+     }
+-    
++
+     // 取得版本号
+     public static String GetVersion(Context context) {
+ 		try {
+@@ -86,7 +88,7 @@
+     public static void showToast(final String toast, final Context context)
+     {
+     	new Thread(new Runnable() {
+-			
++
+ 			@Override
+ 			public void run() {
+ 				Looper.prepare();
+@@ -95,13 +97,13 @@
+ 			}
+ 		}).start();
+     }
+-    
++
+     public static boolean isConnected(Context context) {
+         ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+         NetworkInfo info = conn.getActiveNetworkInfo();
+         return (info != null && info.isConnected());
+     }
+-    
++
+ 	public static String getImei(Context context, String imei) {
+         String ret = null;
+ 		try {
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/TagAliasOperatorHelper.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/TagAliasOperatorHelper.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/TagAliasOperatorHelper.java	(revision )
+@@ -1,10 +1,12 @@
+-package com.threelinksandonedefense.myapplication.jpush;
++package com.threelinksandonedefense.myapplication;
+ 
+ import android.content.Context;
+ import android.os.Handler;
+ import android.os.Message;
+ import android.util.SparseArray;
+ 
++import com.threelinksandonedefense.myapplication.utils.Logger;
++
+ import java.util.Locale;
+ import java.util.Set;
+ 
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ .idea/misc.xml	(revision )
+@@ -24,6 +24,29 @@
+       </value>
+     </option>
+   </component>
++  <component name="ProjectInspectionProfilesVisibleTreeState">
++    <entry key="Project Default">
++      <profile-state>
++        <expanded-state>
++          <State>
++            <id />
++          </State>
++          <State>
++            <id>Android</id>
++          </State>
++          <State>
++            <id>CorrectnessLintAndroid</id>
++          </State>
++          <State>
++            <id>LintAndroid</id>
++          </State>
++          <State>
++            <id>PerformanceLintAndroid</id>
++          </State>
++        </expanded-state>
++      </profile-state>
++    </entry>
++  </component>
+   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/LocalBroadcastManager.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/LocalBroadcastManager.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/jpush/LocalBroadcastManager.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
+@@ -1,263 +0,0 @@
+-package com.threelinksandonedefense.myapplication.jpush;
+-
+-import android.content.BroadcastReceiver;
+-import android.content.Context;
+-import android.content.Intent;
+-import android.content.IntentFilter;
+-import android.net.Uri;
+-import android.os.Handler;
+-import android.os.Message;
+-
+-import java.util.ArrayList;
+-import java.util.HashMap;
+-import java.util.Set;
+-
+-/**
+- * Created by efan on 2017/4/14.
+- */
+-
+-public final class LocalBroadcastManager {
+-    private static final String TAG = "JIGUANG-Example";
+-    private static final boolean DEBUG = false;
+-    private final Context mAppContext;
+-    private final HashMap<BroadcastReceiver, ArrayList<IntentFilter>> mReceivers = new HashMap<BroadcastReceiver, ArrayList<IntentFilter>>();
+-    private final HashMap<String, ArrayList<ReceiverRecord>> mActions = new HashMap<String, ArrayList<ReceiverRecord>> ();
+-    private final ArrayList<BroadcastRecord> mPendingBroadcasts = new ArrayList<BroadcastRecord>();
+-    static final int MSG_EXEC_PENDING_BROADCASTS = 1;
+-    private final Handler mHandler;
+-    private static final Object mLock = new Object();
+-    private static LocalBroadcastManager mInstance;
+-
+-    public static LocalBroadcastManager getInstance(Context context) {
+-        Object var1 = mLock;
+-        synchronized (mLock) {
+-            if (mInstance == null) {
+-                mInstance = new LocalBroadcastManager(context.getApplicationContext());
+-            }
+-
+-            return mInstance;
+-        }
+-    }
+-
+-    private LocalBroadcastManager(Context context) {
+-        this.mAppContext = context;
+-        this.mHandler = new Handler(context.getMainLooper()) {
+-            public void handleMessage(Message msg) {
+-                switch (msg.what) {
+-                    case 1:
+-                        LocalBroadcastManager.this.executePendingBroadcasts();
+-                        break;
+-                    default:
+-                        super.handleMessage(msg);
+-                }
+-
+-            }
+-        };
+-    }
+-
+-    public void registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+-        HashMap var3 = this.mReceivers;
+-        synchronized (this.mReceivers) {
+-            ReceiverRecord entry = new ReceiverRecord(filter, receiver);
+-            ArrayList filters = (ArrayList) this.mReceivers.get(receiver);
+-            if (filters == null) {
+-                filters = new ArrayList(1);
+-                this.mReceivers.put(receiver, filters);
+-            }
+-
+-            filters.add(filter);
+-
+-            for (int i = 0; i < filter.countActions(); ++i) {
+-                String action = filter.getAction(i);
+-                ArrayList entries = (ArrayList) this.mActions.get(action);
+-                if (entries == null) {
+-                    entries = new ArrayList(1);
+-                    this.mActions.put(action, entries);
+-                }
+-
+-                entries.add(entry);
+-            }
+-
+-        }
+-    }
+-
+-    public void unregisterReceiver(BroadcastReceiver receiver) {
+-        HashMap var2 = this.mReceivers;
+-        synchronized (this.mReceivers) {
+-            ArrayList filters = (ArrayList) this.mReceivers.remove(receiver);
+-            if (filters != null) {
+-                for (int i = 0; i < filters.size(); ++i) {
+-                    IntentFilter filter = (IntentFilter) filters.get(i);
+-
+-                    for (int j = 0; j < filter.countActions(); ++j) {
+-                        String action = filter.getAction(j);
+-                        ArrayList receivers = (ArrayList) this.mActions.get(action);
+-                        if (receivers != null) {
+-                            for (int k = 0; k < receivers.size(); ++k) {
+-                                if (((ReceiverRecord) receivers.get(k)).receiver == receiver) {
+-                                    receivers.remove(k);
+-                                    --k;
+-                                }
+-                            }
+-
+-                            if (receivers.size() <= 0) {
+-                                this.mActions.remove(action);
+-                            }
+-                        }
+-                    }
+-                }
+-
+-            }
+-        }
+-    }
+-
+-    public boolean sendBroadcast(Intent intent) {
+-        HashMap var2 = this.mReceivers;
+-        synchronized (this.mReceivers) {
+-            String action = intent.getAction();
+-            String type = intent.resolveTypeIfNeeded(this.mAppContext.getContentResolver());
+-            Uri data = intent.getData();
+-            String scheme = intent.getScheme();
+-            Set categories = intent.getCategories();
+-            boolean debug = (intent.getFlags() & 8) != 0;
+-            if (debug) {
+-                Logger.v("LocalBroadcastManager", "Resolving type " + type + " scheme " + scheme + " of intent " + intent);
+-            }
+-
+-            ArrayList entries = (ArrayList) this.mActions.get(intent.getAction());
+-            if (entries != null) {
+-                if (debug) {
+-                    Logger.v("LocalBroadcastManager", "Action list: " + entries);
+-                }
+-
+-                ArrayList receivers = null;
+-
+-                int i;
+-                for (i = 0; i < entries.size(); ++i) {
+-                    ReceiverRecord receiver = (ReceiverRecord) entries.get(i);
+-                    if (debug) {
+-                        Logger.v("LocalBroadcastManager", "Matching against filter " + receiver.filter);
+-                    }
+-
+-                    if (receiver.broadcasting) {
+-                        if (debug) {
+-                            Logger.v("LocalBroadcastManager", "  Filter\'s target already added");
+-                        }
+-                    } else {
+-                        int match = receiver.filter.match(action, type, scheme, data, categories, "LocalBroadcastManager");
+-                        if (match >= 0) {
+-                            if (debug) {
+-                                Logger.v("LocalBroadcastManager", "  Filter matched!  match=0x" + Integer.toHexString(match));
+-                            }
+-
+-                            if (receivers == null) {
+-                                receivers = new ArrayList();
+-                            }
+-
+-                            receivers.add(receiver);
+-                            receiver.broadcasting = true;
+-                        } else if (debug) {
+-                            String reason;
+-                            switch (match) {
+-                                case -4:
+-                                    reason = "category";
+-                                    break;
+-                                case -3:
+-                                    reason = "action";
+-                                    break;
+-                                case -2:
+-                                    reason = "data";
+-                                    break;
+-                                case -1:
+-                                    reason = "type";
+-                                    break;
+-                                default:
+-                                    reason = "unknown reason";
+-                            }
+-
+-                            Logger.v("LocalBroadcastManager", "  Filter did not match: " + reason);
+-                        }
+-                    }
+-                }
+-
+-                if (receivers != null) {
+-                    for (i = 0; i < receivers.size(); ++i) {
+-                        ((ReceiverRecord) receivers.get(i)).broadcasting = false;
+-                    }
+-
+-                    this.mPendingBroadcasts.add(new BroadcastRecord(intent, receivers));
+-                    if (!this.mHandler.hasMessages(1)) {
+-                        this.mHandler.sendEmptyMessage(1);
+-                    }
+-
+-                    return true;
+-                }
+-            }
+-
+-            return false;
+-        }
+-    }
+-
+-    public void sendBroadcastSync(Intent intent) {
+-        if (this.sendBroadcast(intent)) {
+-            this.executePendingBroadcasts();
+-        }
+-
+-    }
+-
+-    private void executePendingBroadcasts() {
+-        while (true) {
+-            BroadcastRecord[] brs = null;
+-            HashMap i = this.mReceivers;
+-            synchronized (this.mReceivers) {
+-                int br = this.mPendingBroadcasts.size();
+-                if (br <= 0) {
+-                    return;
+-                }
+-
+-                brs = new BroadcastRecord[br];
+-                this.mPendingBroadcasts.toArray(brs);
+-                this.mPendingBroadcasts.clear();
+-            }
+-
+-            for (int var6 = 0; var6 < brs.length; ++var6) {
+-                BroadcastRecord var7 = brs[var6];
+-
+-                for (int j = 0; j < var7.receivers.size(); ++j) {
+-                    ((ReceiverRecord) var7.receivers.get(j)).receiver.onReceive(this.mAppContext, var7.intent);
+-                }
+-            }
+-        }
+-    }
+-
+-    private static class BroadcastRecord {
+-        final Intent intent;
+-        final ArrayList<ReceiverRecord> receivers;
+-
+-        BroadcastRecord(Intent _intent, ArrayList<ReceiverRecord> _receivers) {
+-            this.intent = _intent;
+-            this.receivers = _receivers;
+-        }
+-    }
+-
+-    private static class ReceiverRecord {
+-        final IntentFilter filter;
+-        final BroadcastReceiver receiver;
+-        boolean broadcasting;
+-
+-        ReceiverRecord(IntentFilter _filter, BroadcastReceiver _receiver) {
+-            this.filter = _filter;
+-            this.receiver = _receiver;
+-        }
+-
+-        public String toString() {
+-            StringBuilder builder = new StringBuilder(128);
+-            builder.append("Receiver{");
+-            builder.append(this.receiver);
+-            builder.append(" filter=");
+-            builder.append(this.filter);
+-            builder.append("}");
+-            return builder.toString();
+-        }
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/AndroidManifest.xml	(revision )
+@@ -24,11 +24,11 @@
+     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+     <!-- Required -->
+     <permission
+-        android:name="com.threelinksandonedefense.myapplication.permission.JPUSH_MESSAGE"
++        android:name="${applicationId}.permission.JPUSH_MESSAGE"
+         android:protectionLevel="signature" />
+ 
+     <!-- Required  一些系统要求的权限，如访问网络等-->
+-    <uses-permission android:name="com.threelinksandonedefense.myapplication.permission.JPUSH_MESSAGE" />
++    <uses-permission android:name="${applicationId}.permission.JPUSH_MESSAGE" />
+     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+     <uses-permission android:name="android.permission.INTERNET" />
+     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+@@ -60,7 +60,7 @@
+         android:supportsRtl="true"
+         android:theme="@style/AppTheme">
+         <activity
+-            android:name=".map.MapActivity"
++            android:name=".guide.GuideActivity"
+             android:screenOrientation="portrait"
+             android:theme="@style/GuideTheme">
+             <intent-filter>
+@@ -79,6 +79,7 @@
+         <activity
+             android:name=".monthlyeport.MonthlyeportActivity"
+             android:screenOrientation="portrait" />
++        <activity android:name=".Tadk" />
+         <activity
+             android:name=".completesectionfilling.CompleteSectionFillingActivity"
+             android:screenOrientation="portrait" />
+@@ -89,7 +90,7 @@
+             android:screenOrientation="portrait" />
+         <activity android:name=".updatafriends.UpDataFriendsActivity"
+             android:screenOrientation="portrait" />
+-        <activity android:name=".guide.GuideActivity"
++        <activity android:name=".map.MapActivity"
+             android:screenOrientation="portrait" />
+         <provider
+             android:name="android.support.v4.content.FileProvider"
+@@ -105,6 +106,13 @@
+             android:name="com.amap.api.v2.apikey"
+             android:value="396f35d63bdea51be4827c78763d41dd"></meta-data>
+         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
++        <!-- Rich push 核心功能 since 2.0.6-->
++        <activity
++            android:name="cn.jpush.android.ui.PopWinActivity"
++            android:theme="@style/MyDialogStyle"
++            android:exported="false">
++        </activity>
++
+         <!-- Required SDK核心功能-->
+         <activity
+             android:name="cn.jpush.android.ui.PushActivity"
+@@ -114,9 +122,104 @@
+             <intent-filter>
+                 <action android:name="cn.jpush.android.ui.PushActivity" />
+                 <category android:name="android.intent.category.DEFAULT" />
+-                <category android:name="com.threelinksandonedefense.myapplication" />
++                <category android:name="${applicationId}" />
+             </intent-filter>
+         </activity>
++
++        <!-- Required SDK 核心功能-->
++        <!-- 可配置android:process参数将PushService放在其他进程中 -->
++        <service
++            android:name="cn.jpush.android.service.PushService"
++            android:process=":pushcore"
++            android:exported="false">
++            <intent-filter>
++                <action android:name="cn.jpush.android.intent.REGISTER" />
++                <action android:name="cn.jpush.android.intent.REPORT" />
++                <action android:name="cn.jpush.android.intent.PushService" />
++                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
++            </intent-filter>
++        </service>
++
++        <!-- since 3.0.9 Required SDK 核心功能-->
++        <provider
++            android:authorities="${applicationId}.DataProvider"
++            android:name="cn.jpush.android.service.DataProvider"
++            android:process=":pushcore"
++            android:exported="false"
++            />
++
++        <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
++        <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
++        <service
++            android:name="cn.jpush.android.service.DaemonService"
++            android:enabled="true"
++            android:exported="true">
++            <intent-filter>
++                <action android:name="cn.jpush.android.intent.DaemonService" />
++                <category android:name="${applicationId}" />
++            </intent-filter>
++
++        </service>
++
++        <!-- since 3.1.0 Required SDK 核心功能-->
++        <provider
++            android:authorities="${applicationId}.DownloadProvider"
++            android:name="cn.jpush.android.service.DownloadProvider"
++            android:exported="true"
++            />
++
++        <!-- Required SDK核心功能-->
++        <receiver
++            android:name="cn.jpush.android.service.PushReceiver"
++            android:enabled="true"
++            android:exported="false">
++            <intent-filter android:priority="1000">
++                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />   <!--Required  显示通知栏 -->
++                <category android:name="${applicationId}" />
++            </intent-filter>
++            <intent-filter>
++                <action android:name="android.intent.action.USER_PRESENT" />
++                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
++            </intent-filter>
++            <!-- Optional -->
++            <intent-filter>
++                <action android:name="android.intent.action.PACKAGE_ADDED" />
++                <action android:name="android.intent.action.PACKAGE_REMOVED" />
++
++                <data android:scheme="package" />
++            </intent-filter>
++        </receiver>
++
++        <!-- Required SDK核心功能-->
++        <receiver android:name="cn.jpush.android.service.AlarmReceiver" android:exported="false"/>
++
++
++        <!-- User defined.  For test only  用户自定义的广播接收器-->
++        <receiver
++            android:name="com.threelinksandonedefense.myapplication.MyReceiver"
++            android:exported="false"
++            android:enabled="true">
++            <intent-filter>
++                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!--Required  用户注册SDK的intent-->
++                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!--Required  用户接收SDK消息的intent-->
++                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!--Required  用户接收SDK通知栏信息的intent-->
++                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!--Required  用户打开自定义通知栏的intent-->
++                <action android:name="cn.jpush.android.intent.CONNECTION" /><!-- 接收网络变化 连接/断开 since 1.6.3 -->
++                <category android:name="${applicationId}" />
++            </intent-filter>
++        </receiver>
++
++
++
++        <!-- User defined.  For test only  用户自定义接收消息器,3.0.7开始支持,目前新tag/alias接口设置结果会在该广播接收器对应的方法中回调-->
++        <!--since 3.3.0 接收JPush相关事件-->
++        <receiver android:name="com.threelinksandonedefense.myapplication.PushMessageReceiver">
++            <intent-filter>
++                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
++                <category android:name="${applicationId}"></category>
++            </intent-filter>
++        </receiver>
++
+         <!--since 3.3.0 Required SDK核心功能-->
+         <activity
+             android:name="cn.jpush.android.service.JNotifyActivity"
+@@ -125,26 +228,41 @@
+             android:theme="@android:style/Theme.Translucent.NoTitleBar">
+             <intent-filter>
+                 <action android:name="cn.jpush.android.intent.JNotifyActivity" />
+-                <category android:name="com.threelinksandonedefense.myapplication" />
++                <category android:name="${applicationId}" />
+             </intent-filter>
+         </activity>
+-        <!-- User defined.  For test only  用户自定义接收消息器,3.0.7开始支持,目前新tag/alias接口设置结果会在该广播接收器对应的方法中回调-->
+-        <!--since 3.3.0 接收JPush相关事件-->
+-        <receiver android:name="com.threelinksandonedefense.myapplication.jpush.PushMessageReceiver">
+-            <intent-filter>
+-                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+-                <category android:name="com.threelinksandonedefense.myapplication"></category>
+-            </intent-filter>
+-        </receiver>
++
+         <!-- since 3.3.0 Required SDK 核心功能-->
+         <!-- 可配置android:process参数将PushService放在其他进程中 -->
+         <!--User defined.  For test only 继承自cn.jpush.android.service.JCommonService-->
+-        <service android:name="com.threelinksandonedefense.myapplication.jpush.PushService"
++        <service android:name="com.threelinksandonedefense.myapplication.PushService"
+             android:process=":pushcore">
+             <intent-filter>
+                 <action android:name="cn.jiguang.user.service.action" />
+             </intent-filter>
+         </service>
++        <receiver
++            android:name=".BoardcastReceiver"
++            android:enabled="true">
++            <intent-filter>
++                <!--Required 用户注册SDK的intent-->
++                <action android:name="cn.jpush.android.intent.REGISTRATION" />
++                <!--Required 用户接收SDK消息的intent-->
++                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
++                <!--Required 用户接收SDK通知栏信息的intent-->
++                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
++                <!--Required 用户打开自定义通知栏的intent-->
++                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
++                <!-- 接收网络变化 连接/断开 since 1.6.3 -->
++                <action android:name="cn.jpush.android.intent.CONNECTION" />
++                <action android:name="android.intent.action.BOOT_COMPLETED"/><!--开机广播-->
++                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/><!--网络状态改变广播-->
++                <category android:name="com.woman.RCTest" />
++            </intent-filter>
++        </receiver>
++
++
++
+         <!-- Required  . Enable it you can get statistics data with channel -->
+         <meta-data android:name="JPUSH_CHANNEL" android:value="44a788d4d0b15afbbf202629"/>
+         <meta-data android:name="JPUSH_APPKEY" android:value="a35e4088826a825c08d2dacf" /> <!--  </>值来自开发者平台取得的AppKey-->
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ .idea/vcs.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/BoardcastReceiver.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/BoardcastReceiver.java	(revision )
++++ app/src/main/java/com/threelinksandonedefense/myapplication/BoardcastReceiver.java	(revision )
+@@ -0,0 +1,18 @@
++package com.threelinksandonedefense.myapplication;
++
++import android.content.BroadcastReceiver;
++import android.content.Context;
++import android.content.Intent;
++
++/**
++ * Created by 张成昆 on 2019-7-18.
++ */
++
++public class BoardcastReceiver extends BroadcastReceiver {
++    @Override
++    public void onReceive(Context context, Intent intent) {
++        Intent pushintent=new Intent(context,PushService.class);//启动极光推送的服务
++        context.startService(pushintent);
++    }
++}
++
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/PushService.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/PushService.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/PushService.java	(revision )
+@@ -1,4 +1,8 @@
+-package com.threelinksandonedefense.myapplication.jpush;
++package com.threelinksandonedefense.myapplication;
++
++/**
++ * Created by 张成昆 on 2019-7-17.
++ */
+ 
+ 
+ import cn.jpush.android.service.JCommonService;
+@@ -6,3 +10,4 @@
+ public class PushService extends JCommonService {
+ 
+ }
++
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/MyReceiver.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/MyReceiver.java	(revision )
++++ app/src/main/java/com/threelinksandonedefense/myapplication/MyReceiver.java	(revision )
+@@ -0,0 +1,110 @@
++package com.threelinksandonedefense.myapplication;
++
++/**
++ * Created by 张成昆 on 2019-7-17.
++ */
++import android.content.BroadcastReceiver;
++import android.content.Context;
++import android.content.Intent;
++import android.os.Bundle;
++import android.text.TextUtils;
++
++import com.threelinksandonedefense.myapplication.utils.Logger;
++
++import org.json.JSONException;
++import org.json.JSONObject;
++
++import java.util.Iterator;
++
++import cn.jpush.android.api.JPushInterface;
++
++/**
++ * 自定义接收器
++ *
++ * 如果不定义这个 Receiver，则：
++ * 1) 默认用户会打开主界面
++ * 2) 接收不到自定义消息
++ */
++public class MyReceiver extends BroadcastReceiver {
++    private static final String TAG = "JIGUANG-Example";
++
++    @Override
++    public void onReceive(Context context, Intent intent) {
++        try {
++            Bundle bundle = intent.getExtras();
++            Logger.d(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
++
++            if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
++                String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
++                Logger.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
++                //send the Registration Id to your server...
++
++            } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
++                Logger.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
++//                processCustomMessage(context, bundle);
++
++            } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
++                Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知");
++                int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
++                Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
++
++            } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
++                Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");
++
++//                //打开自定义的Activity
++//                Intent i = new Intent(context, TestActivity.class);
++//                i.putExtras(bundle);
++//                //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++//                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
++//                context.startActivity(i);
++
++            } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
++                Logger.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
++                //在这里根据 JPushInterface.EXTRA_EXTRA 的内容处理代码，比如打开新的Activity， 打开一个网页等..
++
++            } else if(JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
++                boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
++                Logger.w(TAG, "[MyReceiver]" + intent.getAction() +" connected state change to "+connected);
++            } else {
++                Logger.d(TAG, "[MyReceiver] Unhandled intent - " + intent.getAction());
++            }
++        } catch (Exception e){
++
++        }
++
++    }
++
++    // 打印所有的 intent extra 数据
++    private static String printBundle(Bundle bundle) {
++        StringBuilder sb = new StringBuilder();
++        for (String key : bundle.keySet()) {
++            if (key.equals(JPushInterface.EXTRA_NOTIFICATION_ID)) {
++                sb.append("\nkey:" + key + ", value:" + bundle.getInt(key));
++            }else if(key.equals(JPushInterface.EXTRA_CONNECTION_CHANGE)){
++                sb.append("\nkey:" + key + ", value:" + bundle.getBoolean(key));
++            } else if (key.equals(JPushInterface.EXTRA_EXTRA)) {
++                if (TextUtils.isEmpty(bundle.getString(JPushInterface.EXTRA_EXTRA))) {
++                    Logger.i(TAG, "This message has no Extra data");
++                    continue;
++                }
++
++                try {
++                    JSONObject json = new JSONObject(bundle.getString(JPushInterface.EXTRA_EXTRA));
++                    Iterator<String> it =  json.keys();
++
++                    while (it.hasNext()) {
++                        String myKey = it.next();
++                        sb.append("\nkey:" + key + ", value: [" +
++                                myKey + " - " +json.optString(myKey) + "]");
++                    }
++                } catch (JSONException e) {
++                    Logger.e(TAG, "Get message extra JSON error!");
++                }
++
++            } else {
++                sb.append("\nkey:" + key + ", value:" + bundle.get(key));
++            }
++        }
++        return sb.toString();
++    }
++}
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/guide/GuideActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/guide/GuideActivity.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/guide/GuideActivity.java	(revision )
+@@ -9,7 +9,12 @@
+ import com.threelinksandonedefense.myapplication.MainActivity;
+ import com.threelinksandonedefense.myapplication.MyApplication;
+ import com.threelinksandonedefense.myapplication.R;
++import com.threelinksandonedefense.myapplication.Tadk;
++import com.threelinksandonedefense.myapplication.circleoffriends.CircleoffriendsActivity;
++import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteSectionFillingActivity;
+ import com.threelinksandonedefense.myapplication.land.LandActivity;
++import com.threelinksandonedefense.myapplication.map.MapActivity;
++import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
+ import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
+ import com.threelinksandonedefense.myapplication.utils.Utils;
+ 
+@@ -27,14 +32,6 @@
+         setContentView(R.layout.act_guide);
+         initdate();
+     }
+-    /**
+-    * @Title: GuideActivity
+-    * @Package com.threelinksandonedefense.myapplication.guide
+-    * @Description: (用一句话描述)
+-    * @author 张成昆
+-    * @date 2019-7-19
+-    * @version V1.0
+-    */
+     private void initdate() {
+         handler = new Handler();
+         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+@@ -52,7 +49,7 @@
+                 handler.postDelayed(new Runnable() {
+                     @Override
+                     public void run() {
+-                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
++                        Intent intent = new Intent(GuideActivity.this, MapActivity.class);
+                         startActivity(intent);
+                         finish();
+                     }
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/PushMessageReceiver.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/PushMessageReceiver.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/PushMessageReceiver.java	(revision )
+@@ -1,21 +1,21 @@
+-package com.threelinksandonedefense.myapplication.jpush;
++package com.threelinksandonedefense.myapplication;
++
+ import android.content.Context;
+ import android.content.Intent;
+-import android.os.Bundle;
+ import android.util.Log;
+ 
+-import com.threelinksandonedefense.myapplication.MainActivity;
+-
+-import org.json.JSONException;
+-import org.json.JSONObject;
+-
+ import cn.jpush.android.api.CmdMessage;
+ import cn.jpush.android.api.CustomMessage;
+ import cn.jpush.android.api.JPushInterface;
+ import cn.jpush.android.api.JPushMessage;
+ import cn.jpush.android.api.NotificationMessage;
+ import cn.jpush.android.service.JPushMessageReceiver;
+-public class PushMessageReceiver extends JPushMessageReceiver{
++
++/**
++ * Created by 张成昆 on 2019-7-17.
++ */
++
++public class PushMessageReceiver  extends JPushMessageReceiver {
+     private static final String TAG = "PushMessageReceiver";
+     @Override
+     public void onMessage(Context context, CustomMessage customMessage) {
+@@ -27,15 +27,15 @@
+     public void onNotifyMessageOpened(Context context, NotificationMessage message) {
+         Log.e(TAG,"[onNotifyMessageOpened] "+message);
+         try{
+-            //打开自定义的Activity
+-            Intent i = new Intent(context, MainActivity.class);
+-            Bundle bundle = new Bundle();
+-            bundle.putString(JPushInterface.EXTRA_NOTIFICATION_TITLE,message.notificationTitle);
+-            bundle.putString(JPushInterface.EXTRA_ALERT,message.notificationContent);
+-            i.putExtras(bundle);
+-            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
+-            context.startActivity(i);
++//            //打开自定义的Activity
++//            Intent i = new Intent(context, TestActivity.class);
++//            Bundle bundle = new Bundle();
++//            bundle.putString(JPushInterface.EXTRA_NOTIFICATION_TITLE,message.notificationTitle);
++//            bundle.putString(JPushInterface.EXTRA_ALERT,message.notificationContent);
++//            i.putExtras(bundle);
++//            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
++//            context.startActivity(i);
+         }catch (Throwable throwable){
+ 
+         }
+@@ -112,22 +112,22 @@
+     //send msg to MainActivity
+     private void processCustomMessage(Context context, CustomMessage customMessage) {
+         if (MainActivity.isForeground) {
+-            String message = customMessage.message;
+-            String extras = customMessage.extra;
+-            Intent msgIntent = new Intent(MainActivity.MESSAGE_RECEIVED_ACTION);
+-            msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
+-            if (!ExampleUtil.isEmpty(extras)) {
+-                try {
+-                    JSONObject extraJson = new JSONObject(extras);
+-                    if (extraJson.length() > 0) {
+-                        msgIntent.putExtra(MainActivity.KEY_EXTRAS, extras);
+-                    }
+-                } catch (JSONException e) {
+-
+-                }
+-
+-            }
+-            LocalBroadcastManager.getInstance(context).sendBroadcast(msgIntent);
++//            String message = customMessage.message;
++//            String extras = customMessage.extra;
++//            Intent msgIntent = new Intent(MainActivity.MESSAGE_RECEIVED_ACTION);
++//            msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
++//            if (!ExampleUtil.isEmpty(extras)) {
++//                try {
++//                    JSONObject extraJson = new JSONObject(extras);
++//                    if (extraJson.length() > 0) {
++//                        msgIntent.putExtra(MainActivity.KEY_EXTRAS, extras);
++//                    }
++//                } catch (JSONException e) {
++//
++//                }
++//
++//            }
++//            LocalBroadcastManager.getInstance(context).sendBroadcast(msgIntent);
+         }
+     }
+-}
++}
+\ No newline at end of file
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/land/LandActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/land/LandActivity.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/land/LandActivity.java	(revision )
+@@ -1,14 +1,8 @@
+ package com.threelinksandonedefense.myapplication.land;
+ 
+-import android.annotation.TargetApi;
+-import android.content.Context;
+ import android.content.Intent;
+-import android.net.Uri;
+-import android.os.Build;
+ import android.os.Bundle;
+-import android.provider.Settings;
+ import android.support.annotation.Nullable;
+-import android.support.v4.app.NotificationManagerCompat;
+ import android.view.View;
+ import android.widget.EditText;
+ import android.widget.LinearLayout;
+@@ -44,6 +38,7 @@
+     LinearLayout landLin;
+     private String username = "";
+     private String password = "";
++
+     @Override
+     protected void onCreate(@Nullable Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+@@ -52,6 +47,7 @@
+         initview();
+         listener();
+     }
++
+     private void listener() {
+         landBu.setOnClickListener(new View.OnClickListener() {
+             @Override
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/map/MapActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/map/MapActivity.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/map/MapActivity.java	(revision )
+@@ -20,28 +20,13 @@
+ import com.amap.api.maps.CameraUpdateFactory;
+ import com.amap.api.maps.MapView;
+ import com.amap.api.maps.model.LatLng;
+-import com.amap.api.maps.model.LatLngBounds;
+ import com.amap.api.maps.model.Polyline;
+ import com.amap.api.maps.model.PolylineOptions;
+ import com.amap.api.services.core.LatLonPoint;
+-import com.amap.api.services.core.PoiItem;
+ import com.amap.api.services.district.DistrictItem;
+ import com.amap.api.services.district.DistrictResult;
+ import com.amap.api.services.district.DistrictSearch;
+ import com.amap.api.services.district.DistrictSearchQuery;
+-import com.amap.api.services.geocoder.GeocodeResult;
+-import com.amap.api.services.geocoder.GeocodeSearch;
+-import com.amap.api.services.geocoder.RegeocodeQuery;
+-import com.amap.api.services.geocoder.RegeocodeResult;
+-import com.amap.api.services.poisearch.PoiResult;
+-import com.amap.api.services.poisearch.PoiSearch;
+-import com.amap.api.services.route.BusRouteResult;
+-import com.amap.api.services.route.DrivePath;
+-import com.amap.api.services.route.DriveRouteResult;
+-import com.amap.api.services.route.DriveStep;
+-import com.amap.api.services.route.RideRouteResult;
+-import com.amap.api.services.route.RouteSearch;
+-import com.amap.api.services.route.WalkRouteResult;
+ import com.threelinksandonedefense.myapplication.R;
+ import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
+ import com.threelinksandonedefense.myapplication.utils.ToastUtils;
+@@ -54,13 +39,11 @@
+ import butterknife.Bind;
+ import butterknife.ButterKnife;
+ 
+-import static com.amap.api.services.route.RouteSearch.DRIVING_SINGLE_NO_HIGHWAY;
+-
+ /**
+  * MVPPlugin
+  * 邮箱 784787081@qq.com
+  */
+-public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter> implements MapContract.View{
++public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter> implements MapContract.View, DistrictSearch.OnDistrictSearchListener, ClusterRender {
+     @Bind(R.id.map)
+     MapView mMapView;
+     @Bind(R.id.lin)
+@@ -70,7 +53,11 @@
+     @Bind(R.id.pqi)
+     Button pqi;
+     private AMap aMap = null;
+-    private RouteSearch routeSearch;
++    private String Token = "CxEPsC3JLlrx4h78bLFjQMBo8pOVTJOJDIdXnaYEBlpJ81iXiIxymn4MrbQbITcg";
++    private Map<Integer, Drawable> mBackDrawAbles = new HashMap<Integer, Drawable>();
++    private LatLonPoint centerLatLng;
++    private Polyline polyline;
++    private ClusterOverlay mClusterOverlay;
+ 
+     @Override
+     protected void onCreate(@Nullable Bundle savedInstanceState) {
+@@ -79,122 +66,306 @@
+         ButterKnife.bind(this);
+         mMapView.onCreate(savedInstanceState);
+         initMap();
+-        linstener();
++        initSearch();
++        lintener();
+     }
+ 
+-    private void linstener() {
++    //省份高亮
++    private void initSearch() {
++        DistrictSearch search = new DistrictSearch(MapActivity.this);
++        DistrictSearchQuery query = new DistrictSearchQuery();
++        query.setKeywords("广东省");//传入关键字
++        query.setShowBoundary(true);//是否返回边界值
++        search.setQuery(query);
++        search.setOnDistrictSearchListener(this);//绑定监听器
++        search.searchDistrictAnsy();//开始搜索
++    }
++
++    private void lintener() {
++        lin.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View view) {
++                mPresenter.getData(Token, MapActivity.this);
++            }
++        });
+         poi.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+-                routeSearch = new RouteSearch(MapActivity.this);
+-                LatLonPoint startPoint = new LatLonPoint(38.032931, 114.514011);//石家庄
+-                LatLonPoint endPoint = new LatLonPoint(38.867495, 115.458835);
+-                RouteSearch.FromAndTo  fromAndTo=   new RouteSearch.FromAndTo(startPoint,endPoint);
+-                List<LatLonPoint> sss = new ArrayList<>();//114.807163,38.644015
+-                LatLonPoint LatLonPoint = new LatLonPoint(38.644015,114.807163);
+-                sss.add(LatLonPoint);
+-                RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, DRIVING_SINGLE_NO_HIGHWAY, sss, null, "");
+-                routeSearch.calculateDriveRouteAsyn(query);
+-                routeSearch.setRouteSearchListener(new RouteSearch.OnRouteSearchListener() {
+-                    @Override
+-                    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
+-
+-                    }
++                mPresenter.getPoi(Token, MapActivity.this);
++            }
++        });
++        pqi.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View view) {
++                mPresenter.getPqi(Token, MapActivity.this);
++            }
++        });
++    }
+ 
+-                    @Override
+-                    public void onDriveRouteSearched(DriveRouteResult result, int i) {
+-                        List<LatLonPoint> polyline = new ArrayList<>();
+-                        List<DrivePath> drivePathList = result.getPaths();
+-                        DrivePath drivePath = drivePathList.get(0);
+-                        List<DriveStep> steps = drivePath.getSteps();
+-                        for (DriveStep step : steps) {
+-                            polyline.addAll(step.getPolyline()) ;
+-                        }
+-                        List<LatLng> latLngs = new ArrayList<LatLng>();
+-                        for (int k = 0; k < polyline.size(); k++) {
+-                            latLngs.add(new LatLng(polyline.get(k).getLatitude(), polyline.get(k).getLongitude()));
+-                        }
+-                        aMap.addPolyline(new PolylineOptions().
+-                                addAll(latLngs).width(10).color(Color.RED));
+-                    }
++    //画线
++    @Override
++    public void getDatas(MdBean.RoadInfo s) {
++        ArrayList<MdBean.LonLatsInfo> listdata = s.getRoad_lon_lat_province().get(0).getRoad_lon_lat_list();
++        List<LatLng> latLngs = new ArrayList<LatLng>();
++        for (int i = 0; i < listdata.size(); i++) {
++            latLngs.add(new LatLng(Double.valueOf(listdata.get(i).getLatitude()), Double.valueOf(listdata.get(i).getLongitude())));
++        }
++        aMap.addPolyline(new PolylineOptions().
++                addAll(latLngs).width(10).color(Color.RED));
++    }
+ 
+-                    @Override
+-                    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+-
+-                    }
++    //画点
++    @Override
++    public void getPois(PoiBean.ResultsBean ss) {
++        List<ClusterItem> items = new ArrayList<ClusterItem>();
++        for (int i = 0; i < ss.getTunnel_next_level().size(); i++) {
++            LatLng latLng = new LatLng(Double.valueOf(ss.getTunnel_next_level().get(i).getLatitude()), Double.valueOf(ss.getTunnel_next_level().get(i).getLongitude()), false);
++            RegionItem regionItem = new RegionItem(latLng,
++                    "test" + i);
++            items.add(regionItem);
++        }
++//        List<ClusterItem> items = new ArrayList<ClusterItem>();
++//        //随机10000个点
++//        for (int i = 0; i < 10000; i++) {
++//            double lat = Math.random() + 39.474923;
++//            double lon = Math.random() + 116.027116;
++//            LatLng latLng = new LatLng(lat, lon, false);
++//            RegionItem regionItem = new RegionItem(latLng,
++//                    "test" + i);
++//            items.add(regionItem);
++//
++//        }
++        mClusterOverlay = new ClusterOverlay(aMap, items,
++                dp2px(getApplicationContext(), 100),
++                getApplicationContext());
++        mClusterOverlay.setClusterRenderer(MapActivity.this);
++    }
+ 
+-                    @Override
+-                    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
++    @Override
++    public void getPqis(PqiBean.PCIInfo sss) {
++        ArrayList<PqiBean.RoadPCIInfo>  result =  sss.getRoad_indicator_list().get(0).getRoad_indicator_distribute();
++        for (int i = 0; i < result.size(); i++) {
++            ArrayList<PqiBean.LonLatsInfo> roadLonsLatsInfos = result.get(i).getRoad_lon_lat_list();
++            int indicator_pci_grade = -1;
++            indicator_pci_grade = Integer.valueOf(result.get(i).getIndicator_info().getIndicator_grade());
++            int PCI_color = 0;
++            switch (indicator_pci_grade) {
++                case 1:
++                    PCI_color = Color.rgb(120, 224, 57);
++                    break;
++                case 2:
++                    PCI_color = Color.rgb(97, 251, 231);
++                    break;
++                case 3:
++                    PCI_color = Color.rgb(224, 238, 115);
++                    break;
++                case 4:
++                    PCI_color = Color.rgb(255, 170, 82);
++                    break;
++                case 5:
++                    PCI_color = Color.rgb(250, 84, 2);
++                    break;
++                default:
++                    PCI_color = Color.argb(127, 160, 160, 160);
++                    break;
++            }
++            for (int j = 0; j < roadLonsLatsInfos.size(); j++) {
++                List<LatLng> latLngs = new ArrayList<LatLng>();
++                latLngs.clear();
++                String s_longitude = roadLonsLatsInfos.get(j)
++                        .getLongitude();
++                String s_latitude = roadLonsLatsInfos.get(j)
++                        .getLatitude();
++                String s_longtitude_next = null;
++                String s_latitude_next = null;
++                if (roadLonsLatsInfos.get(j).getEnd_longitude() == null
++                        && j < roadLonsLatsInfos.size() - 1) {
++
++                    s_longtitude_next = roadLonsLatsInfos.get(j + 1)
++                            .getLongitude();
++                    s_latitude_next = roadLonsLatsInfos.get(j + 1)
++                            .getLatitude();
++                } else if (roadLonsLatsInfos.get(j).getEnd_longitude() != null) {
++
++                    s_longtitude_next = roadLonsLatsInfos.get(j)
++                            .getEnd_longitude();
++                    s_latitude_next = roadLonsLatsInfos.get(j)
++                            .getEnd_latitude();
++                } else {
+ 
+-                    }
+-                });
++                }
++                double longtitude = Double.valueOf(s_longitude);// 经度
++                double latitude = Double.valueOf(s_latitude);// 纬度
++
++                double longtitude_next = Double
++                        .valueOf(s_longtitude_next);// 下一个点经度
++                double latitude_next = Double.valueOf(s_latitude_next);// 下一个点经度
++                latLngs.add(new LatLng(latitude,longtitude));
++                latLngs.add(new LatLng(latitude_next,longtitude_next));
++                aMap.addPolyline(new PolylineOptions().addAll(latLngs).width(10).color(PCI_color));
++                Log.e( "张成昆: ", PCI_color+"");
+             }
+-        });
++        }
+     }
+-
+     private void initMap() {
++        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
+         if (aMap == null) {
+             aMap = mMapView.getMap();
+         }
+         aMap.getUiSettings().setRotateGesturesEnabled(false);
+         aMap.getUiSettings().setTiltGesturesEnabled(false);
+     }
++
+     @Override
+     protected void onDestroy() {
+         super.onDestroy();
++        //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
+         mMapView.onDestroy();
+     }
+ 
+     @Override
+     protected void onResume() {
+         super.onResume();
++        //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
+         mMapView.onResume();
+     }
+ 
+     @Override
+     protected void onPause() {
+         super.onPause();
++        //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
+         mMapView.onPause();
+     }
+ 
+     @Override
+     protected void onSaveInstanceState(Bundle outState) {
+         super.onSaveInstanceState(outState);
++        //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
+         mMapView.onSaveInstanceState(outState);
+     }
++
++    private Handler handler = new Handler() {
++        public void handleMessage(Message msg) {
++            PolylineOptions polylineOption = (PolylineOptions) msg.obj;
++            aMap.addPolyline(polylineOption);
++
++        }
++    };
++
+     @Override
+-    public void onRequestError(String msg) {
+-        ToastUtils.showShortToast(msg);
+-    }
++    public void onDistrictSearched(DistrictResult districtResult) {
++        if (districtResult == null || districtResult.getDistrict() == null) {
++            return;
++        }
++        final DistrictItem item = districtResult.getDistrict().get(0);
++        if (item == null) {
++            return;
++        }
++        centerLatLng = item.getCenter();//得到行政中心点坐标
++        if (centerLatLng != null) {  //地图加载时就显示行政区域
++            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLatLng.getLatitude(), centerLatLng.getLongitude()), 7));//13为缩放级别
++        }
++        new Thread() {
++            private PolylineOptions polylineOption;
+ 
++            public void run() {
++                String[] polyStr = item.districtBoundary();
++                if (polyStr == null || polyStr.length == 0) {
++                    return;
++                }
++                for (String str : polyStr) {
++                    String[] lat = str.split(";");
++                    polylineOption = new PolylineOptions();
++                    boolean isFirst = true;
++                    LatLng firstLatLng = null;
++                    for (String latstr : lat) {
++                        String[] lats = latstr.split(",");
++                        if (isFirst) {
++                            isFirst = false;
++                            firstLatLng = new LatLng(Double
++                                    .parseDouble(lats[1]), Double
++                                    .parseDouble(lats[0]));
++                        }
++                        polylineOption.add(new LatLng(Double
++                                .parseDouble(lats[1]), Double
++                                .parseDouble(lats[0])));
++                    }
++                    if (firstLatLng != null) {
++                        polylineOption.add(firstLatLng);
++                    }
+ 
++                    polylineOption.width(6).color(Color.BLUE);
++                    Message message = handler.obtainMessage();
++                    message.obj = polylineOption;
++                    handler.sendMessage(message);
++                }
++            }
++        }.start();
++    }
+ 
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
++    public int dp2px(Context context, float dpValue) {
++        final float scale = context.getResources().getDisplayMetrics().density;
++        return (int) (dpValue * scale + 0.5f);
++    }
+ 
+     @Override
+-    public void getDatas(MdBean.RoadInfo s) {
++    public Drawable getDrawAble(int clusterNum) {
++        int radius = dp2px(getApplicationContext(), 80);
++        if (clusterNum == 1) {
++            Drawable bitmapDrawable = mBackDrawAbles.get(1);
++            if (bitmapDrawable == null) {
++                bitmapDrawable =
++                        getApplication().getResources().getDrawable(
++                                R.drawable.icon_openmap_mark);
++                mBackDrawAbles.put(1, bitmapDrawable);
++            }
+ 
++            return bitmapDrawable;
++        } else if (clusterNum < 5) {
++
++            Drawable bitmapDrawable = mBackDrawAbles.get(2);
++            if (bitmapDrawable == null) {
++                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
++                        Color.argb(159, 210, 154, 6)));
++                mBackDrawAbles.put(2, bitmapDrawable);
++            }
++
++            return bitmapDrawable;
++        } else if (clusterNum < 10) {
++            Drawable bitmapDrawable = mBackDrawAbles.get(3);
++            if (bitmapDrawable == null) {
++                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
++                        Color.argb(199, 217, 114, 0)));
++                mBackDrawAbles.put(3, bitmapDrawable);
++            }
++
++            return bitmapDrawable;
++        } else {
++            Drawable bitmapDrawable = mBackDrawAbles.get(4);
++            if (bitmapDrawable == null) {
++                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
++                        Color.argb(235, 215, 66, 2)));
++                mBackDrawAbles.put(4, bitmapDrawable);
++            }
++
++            return bitmapDrawable;
++        }
++    }
++
++    private Bitmap drawCircle(int radius, int color) {
++
++        Bitmap bitmap = Bitmap.createBitmap(radius * 2, radius * 2,
++                Bitmap.Config.ARGB_8888);
++        Canvas canvas = new Canvas(bitmap);
++        Paint paint = new Paint();
++        RectF rectF = new RectF(0, 0, radius * 2, radius * 2);
++        paint.setColor(color);
++        canvas.drawArc(rectF, 0, 360, true, paint);
++        return bitmap;
+     }
+ 
+     @Override
+-    public void getPois(PoiBean.ResultsBean ss) {
+-
+-    }
+-
+-    @Override
+-    public void getPqis(PqiBean.PCIInfo sss) {
+-
++    public void onRequestError(String msg) {
++        ToastUtils.showShortToast(msg);
+     }
+ }
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/MainActivity.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/MainActivity.java	(revision )
+@@ -1,14 +1,9 @@
+ package com.threelinksandonedefense.myapplication;
+ 
+-import android.content.BroadcastReceiver;
+ import android.content.Context;
+ import android.content.Intent;
+ import android.graphics.Bitmap;
+-import android.net.Uri;
+-import android.os.Build;
+ import android.os.Bundle;
+-import android.provider.Settings;
+-import android.support.v4.app.NotificationManagerCompat;
+ import android.support.v4.widget.ContentLoadingProgressBar;
+ import android.support.v7.app.AppCompatActivity;
+ import android.util.Log;
+@@ -38,8 +33,6 @@
+ import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteSectionFillingActivity;
+ import com.threelinksandonedefense.myapplication.dialog.CommBtnListener;
+ import com.threelinksandonedefense.myapplication.dialog.CommNotificationDialog;
+-import com.threelinksandonedefense.myapplication.jpush.ExampleUtil;
+-import com.threelinksandonedefense.myapplication.jpush.LocalBroadcastManager;
+ import com.threelinksandonedefense.myapplication.land.LandActivity;
+ import com.threelinksandonedefense.myapplication.monthlyeport.MinePopupWindow;
+ import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
+@@ -57,8 +50,10 @@
+ import butterknife.Bind;
+ import butterknife.ButterKnife;
+ import cn.jpush.android.api.JPushInterface;
+-import android.content.IntentFilter;
++
+ public class MainActivity extends AppCompatActivity {
++
++    public static boolean isForeground = false;
+     @Bind(R.id.pro_schedule)
+     ContentLoadingProgressBar mProSchedule;
+     @Bind(R.id.webview)
+@@ -72,36 +67,16 @@
+     private CommNotificationDialog logoutWarmDialog;
+     private String userId;
+     private String XMID;
+-    public static boolean isForeground = false;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+         ButterKnife.bind(this);
+-        if (!NotificationManagerCompat.from(MainActivity.this).areNotificationsEnabled()){
+-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT <  Build.VERSION_CODES.O) {
+-                Intent intent = new Intent();
+-                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+-                intent.putExtra("app_package", MainActivity.this.getPackageName());
+-                intent.putExtra("app_uid", MainActivity.this.getApplicationInfo().uid);
+-                startActivity(intent);
+-            } else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+-                Intent intent = new Intent();
+-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+-                intent.addCategory(Intent.CATEGORY_DEFAULT);
+-                intent.setData(Uri.parse("package:" + MainActivity.this.getPackageName()));
+-                startActivity(intent);
+-            } else {
+-                Intent localIntent = new Intent();
+-                localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-                localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+-                localIntent.setData(Uri.fromParts("package", MainActivity.this.getPackageName(), null));
+-                startActivity(localIntent);
+-            }
+-        }
+-        registerMessageReceiver();
++        JPushInterface.init(getApplicationContext());
+         //启用数据库
+         mWebview.getSettings().setDatabaseEnabled(true);
++
+         //设置定位的数据库路径
+         String dir = this.getApplicationContext().getDir("Code_Activity", Context.MODE_PRIVATE).getPath();
+         mWebview.getSettings().setGeolocationDatabasePath(dir);
+@@ -410,44 +385,16 @@
+             }
+         }
+     }
++    @Override
++    protected void onResume() {
++        isForeground = true;
++        super.onResume();
++    }
++
+ 
+     @Override
+     protected void onPause() {
+         isForeground = false;
+         super.onPause();
+     }
+-    private MessageReceiver mMessageReceiver;
+-    public static final String MESSAGE_RECEIVED_ACTION = "MESSAGE_RECEIVED_ACTION";
+-    public static final String KEY_MESSAGE = "message";
+-    public static final String KEY_EXTRAS = "extras";
+-    public void registerMessageReceiver() {
+-        mMessageReceiver = new MessageReceiver();
+-        IntentFilter filter = new IntentFilter();
+-        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+-        filter.addAction(MESSAGE_RECEIVED_ACTION);
+-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filter);
+-    }
+-    public class MessageReceiver extends BroadcastReceiver {
+-
+-        @Override
+-        public void onReceive(Context context, Intent intent) {
+-            try {
+-                if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
+-                    String messge = intent.getStringExtra(KEY_MESSAGE);
+-                    String extras = intent.getStringExtra(KEY_EXTRAS);
+-                    StringBuilder showMsg = new StringBuilder();
+-                    showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
+-                    if (!ExampleUtil.isEmpty(extras)) {
+-                        showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
+-                    }
+-                }
+-            } catch (Exception e){
+-            }
+-        }
+-    }
+-    @Override
+-    protected void onDestroy() {
+-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+-        super.onDestroy();
+-    }
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/act_task.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/act_task.xml	(revision )
++++ app/src/main/res/layout/act_task.xml	(revision )
+@@ -0,0 +1,473 @@
++<?xml version="1.0" encoding="utf-8"?>
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:id="@+id/lay_rel"
++    android:background="@color/white"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++    <include
++        android:id="@+id/lay_header"
++        layout="@layout/header" />
++
++    <ScrollView
++        android:id="@+id/activity_disease_new_scrollview"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        android:layout_above="@+id/lay_foot"
++        android:layout_below="@+id/lay_header">
++
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="match_parent"
++            android:background="@color/white"
++            android:orientation="vertical">
++
++            <RelativeLayout
++                android:id="@+id/rel_progress"
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:orientation="horizontal">
++
++                <TextView
++                    android:id="@+id/progress_te"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:text="项目名称："
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <TextView
++                    android:id="@+id/ed_progress"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:layout_marginLeft="35dp"
++                    android:layout_toRightOf="@+id/progress_te"
++                    android:background="@drawable/edittext_bg"
++                    android:paddingBottom="2dp"
++                    android:paddingLeft="15dp"
++                    android:paddingTop="2dp"
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <ImageView
++                    android:layout_width="8dp"
++                    android:layout_height="8dp"
++                    android:layout_alignParentRight="true"
++                    android:layout_centerVertical="true"
++                    android:layout_marginRight="10dp"
++                    android:src="@drawable/down" />
++            </RelativeLayout>
++
++            <RelativeLayout
++                android:id="@+id/rel_check"
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:orientation="horizontal">
++
++                <TextView
++                    android:id="@+id/check_te"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:text="分部工程："
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <TextView
++                    android:id="@+id/ed_check"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:layout_marginLeft="35dp"
++                    android:layout_toRightOf="@+id/check_te"
++                    android:background="@drawable/edittext_bg"
++                    android:paddingBottom="2dp"
++                    android:paddingLeft="15dp"
++                    android:paddingTop="2dp"
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <ImageView
++                    android:layout_width="8dp"
++                    android:layout_height="8dp"
++                    android:layout_alignParentRight="true"
++                    android:layout_centerVertical="true"
++                    android:layout_marginRight="10dp"
++                    android:src="@drawable/down" />
++            </RelativeLayout>
++
++            <RelativeLayout
++                android:id="@+id/rel_evaluate"
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:orientation="horizontal">
++
++                <TextView
++                    android:id="@+id/evaluate_te"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:text="分项工程："
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <TextView
++                    android:id="@+id/ed_evaluate"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:layout_marginLeft="35dp"
++                    android:layout_toRightOf="@+id/evaluate_te"
++                    android:background="@drawable/edittext_bg"
++                    android:paddingBottom="2dp"
++                    android:paddingLeft="15dp"
++                    android:paddingTop="2dp"
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <ImageView
++                    android:layout_width="8dp"
++                    android:layout_height="8dp"
++                    android:layout_alignParentRight="true"
++                    android:layout_centerVertical="true"
++                    android:layout_marginRight="10dp"
++                    android:src="@drawable/down" />
++            </RelativeLayout>
++
++
++            <RelativeLayout
++                android:id="@+id/rel_completedbridge"
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:orientation="horizontal">
++
++                <TextView
++                    android:id="@+id/completedbridge_te"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:text="工程部位："
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <EditText
++                    android:id="@+id/ed_completedbridge"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:layout_marginLeft="35dp"
++                    android:layout_toRightOf="@+id/completedbridge_te"
++                    android:background="@drawable/edittext_bg"
++                    android:gravity="center_horizontal"
++                    android:paddingBottom="2dp"
++                    android:paddingTop="2dp"
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++            </RelativeLayout>
++
++            <RelativeLayout
++                android:id="@+id/rel_incompletebridge"
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:orientation="horizontal">
++
++                <TextView
++                    android:id="@+id/incompletebridge_te"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:text="检  查  人："
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++                <EditText
++                    android:id="@+id/ed_incompletebridge"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_centerVertical="true"
++                    android:layout_marginLeft="35dp"
++                    android:layout_toRightOf="@+id/incompletebridge_te"
++                    android:background="@drawable/edittext_bg"
++                    android:gravity="center_horizontal"
++                    android:paddingBottom="2dp"
++                    android:paddingTop="2dp"
++                    android:textColor="@color/text_color"
++                    android:textSize="16sp" />
++
++            </RelativeLayout>
++
++            <LinearLayout
++                android:layout_width="match_parent"
++                android:layout_height="40dp"
++                android:background="#282828">
++
++                <TextView
++                    android:textColor="@color/text_color"
++                    android:layout_width="0dp"
++                    android:layout_height="match_parent"
++                    android:layout_marginLeft="1dp"
++                    android:layout_marginTop="1dp"
++                    android:layout_weight="1"
++                    android:background="@color/white"
++                    android:gravity="center"
++                    android:text="检查项目" />
++
++                <TextView
++                    android:textColor="@color/text_color"
++                    android:layout_width="0dp"
++                    android:layout_height="match_parent"
++                   android:layout_marginTop="1dp"
++                    android:layout_marginLeft="1dp"
++                    android:layout_marginRight="1dp"
++                    android:layout_weight="1"
++                    android:background="@color/white"
++                    android:gravity="center"
++                    android:text="规定值或允许偏差" />
++
++                <TextView
++                    android:textColor="@color/text_color"
++                    android:layout_width="0dp"
++                    android:layout_height="match_parent"
++                    android:layout_marginRight="1dp"
++                    android:layout_marginTop="1dp"
++                    android:layout_weight="1"
++                    android:background="@color/white"
++                    android:gravity="center"
++                    android:text="是否合格" />
++            </LinearLayout>
++
++            <com.threelinksandonedefense.myapplication.NoScroolGridView
++                android:id="@+id/listview"
++                android:divider="@null"
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"/>
++
++
++            <TextView
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:layout_marginLeft="15dp"
++                android:layout_marginTop="15dp"
++                android:text="不合格说明："
++                android:textColor="@color/text_color"
++                android:textSize="16sp" />
++
++            <RelativeLayout
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:layout_marginTop="10dp">
++
++                <LinearLayout
++                    android:layout_width="match_parent"
++                    android:layout_height="100dp"
++                    android:background="@drawable/voice_bg">
++
++                    <EditText
++                        android:id="@+id/explain_et"
++                        android:layout_width="match_parent"
++                        android:layout_height="wrap_content"
++                        android:background="@null"
++                        android:padding="5dp"
++                        android:textColor="#666666"
++                        android:textSize="16sp" />
++                </LinearLayout>
++
++                <RelativeLayout
++                    android:layout_width="50dp"
++                    android:layout_height="50dp"
++                    android:layout_centerHorizontal="true"
++                    android:layout_marginTop="75dp"
++                    android:background="@drawable/voice_button">
++
++                    <ImageView
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_centerHorizontal="true"
++                        android:layout_centerVertical="true"
++                        android:src="@drawable/voice" />
++                </RelativeLayout>
++
++            </RelativeLayout>
++
++            <LinearLayout
++                android:id="@+id/disease_new_bh_content_layout"
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:layout_marginBottom="20dp"
++                android:orientation="vertical">
++
++                <com.threelinksandonedefense.myapplication.utils.NoScroolGridView
++                    android:id="@+id/cai_ji_picture_add_grid"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_marginLeft="10dp"
++                    android:layout_marginRight="10dp"
++                    android:layout_marginTop="3dp"
++                    android:cacheColorHint="@color/transparent"
++                    android:horizontalSpacing="3dp"
++                    android:listSelector="@color/transparent"
++                    android:numColumns="4"
++                    android:scrollbars="none"
++                    android:verticalSpacing="3dp" />
++
++                <HorizontalScrollView
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:visibility="visible">
++                    <LinearLayout
++                        android:id="@+id/disease_custom_edit_item_cjtp_layout"
++                        android:layout_width="match_parent"
++                        android:layout_height="wrap_content"
++                        android:layout_marginLeft="15dp"
++                        android:layout_marginRight="15dp"
++                        android:layout_marginTop="5dp"
++                        android:orientation="horizontal">
++
++                    </LinearLayout>
++
++                </HorizontalScrollView>
++            </LinearLayout>
++
++            <View
++                android:layout_width="match_parent"
++                android:layout_height="1dp"
++                android:background="#f5f5f5" />
++
++            <LinearLayout
++                android:layout_width="match_parent"
++                android:layout_height="50dp"
++                android:orientation="horizontal"
++                android:paddingLeft="30dp"
++                android:paddingRight="15dp">
++
++                <ImageView
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_gravity="center_vertical"
++                    android:src="@drawable/act_new_5" />
++
++                <TextView
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:layout_gravity="center_vertical"
++                    android:layout_marginLeft="15dp"
++                    android:text="地理位置" />
++
++                <RelativeLayout
++                    android:id="@+id/no_bridge_fw"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_gravity="center_vertical"
++                    android:visibility="visible">
++
++                    <LinearLayout
++                        android:id="@+id/location"
++                        android:layout_width="wrap_content"
++                        android:layout_height="match_parent"
++                        android:layout_centerHorizontal="true"
++                        android:gravity="center_vertical"
++                        android:orientation="vertical">
++
++                        <TextView
++                            android:id="@+id/tttt"
++                            android:layout_width="wrap_content"
++                            android:layout_height="wrap_content"
++                            android:text="您不在桥梁500m范围内"
++                            android:textColor="@color/theme_color" />
++
++                        <TextView
++                            android:layout_width="wrap_content"
++                            android:layout_height="wrap_content"
++                            android:layout_below="@+id/tttt"
++                            android:layout_gravity="center_horizontal"
++                            android:text="定位不准？"
++                            android:textColor="@color/theme_color" />
++                    </LinearLayout>
++
++                    <TextView
++                        android:id="@+id/sx"
++                        android:layout_width="20dp"
++                        android:layout_height="20dp"
++                        android:layout_alignParentRight="true"
++                        android:layout_centerVertical="true"
++                        android:background="@drawable/sx" />
++                </RelativeLayout>
++
++                <TextView
++                    android:id="@+id/is_bridge_fw"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_gravity="center_vertical"
++                    android:gravity="center_horizontal"
++                    android:textColor="@color/theme_color"
++                    android:visibility="gone" />
++
++                <RelativeLayout
++                    android:id="@+id/gps"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_gravity="center_vertical"
++                    android:visibility="gone">
++
++                    <TextView
++                        android:id="@+id/sssss"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_centerHorizontal="true"
++                        android:text="该桥梁没有GPS信息"
++                        android:textColor="#cf1f1f" />
++
++                    <TextView
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_below="@+id/sssss"
++                        android:layout_centerHorizontal="true"
++                        android:text="无法定位"
++                        android:textColor="#cf1f1f" />
++                </RelativeLayout>
++            </LinearLayout>
++        </LinearLayout>
++    </ScrollView>
++
++    <LinearLayout
++        android:id="@+id/lay_foot"
++        android:layout_width="match_parent"
++        android:layout_height="40dp"
++        android:layout_alignParentBottom="true">
++
++        <TextView
++            android:id="@+id/save"
++            android:layout_width="0dp"
++            android:layout_height="match_parent"
++            android:layout_weight="1"
++            android:background="#18191a"
++            android:gravity="center"
++            android:text="保存本地"
++            android:textColor="@color/white"
++            android:textSize="45px" />
++
++        <TextView
++            android:id="@+id/add_log"
++            android:layout_width="235dp"
++            android:layout_height="match_parent"
++            android:background="#3499e7"
++            android:gravity="center"
++            android:text="立即上传"
++            android:textColor="@color/white"
++            android:textSize="45px" />
++    </LinearLayout>
++</RelativeLayout>
+\ No newline at end of file
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/encodings.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ .idea/encodings.xml	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+-    <file url="PROJECT" charset="UTF-8" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: app/src/main/java/com/threelinksandonedefense/myapplication/jpush/Logger.java
+===================================================================
+--- app/src/main/java/com/threelinksandonedefense/myapplication/jpush/Logger.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
++++ app/src/main/java/com/threelinksandonedefense/myapplication/jpush/Logger.java	(revision 94ca94e8ccb303511e3b70cde8218336d87f8ef2)
+@@ -1,40 +0,0 @@
+-package com.threelinksandonedefense.myapplication.jpush;
+-
+-import android.util.Log;
+-
+-/**
+- * Created by efan on 2017/4/13.
+- */
+-
+-public class Logger {
+-
+-    //设为false关闭日志
+-    private static final boolean LOG_ENABLE = true;
+-
+-    public static void i(String tag, String msg){
+-        if (LOG_ENABLE){
+-            Log.i(tag, msg);
+-        }
+-    }
+-    public static void v(String tag, String msg){
+-        if (LOG_ENABLE){
+-            Log.v(tag, msg);
+-        }
+-    }
+-    public static void d(String tag, String msg){
+-        if (LOG_ENABLE){
+-            Log.d(tag, msg);
+-        }
+-    }
+-    public static void w(String tag, String msg){
+-        if (LOG_ENABLE){
+-            Log.w(tag, msg);
+-        }
+-    }
+-    public static void e(String tag, String msg){
+-        if (LOG_ENABLE){
+-            Log.e(tag, msg);
+-        }
+-    }
+-
+-}
+diff --git app/src/main/jniLibs/x86_64/libjcore210.so app/src/main/jniLibs/x86_64/libjcore210.so
+index 0b60cd82849bc51c041e83b3a5d397ef00ca2588..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/mips64/libjcore210.so app/src/main/jniLibs/mips64/libjcore210.so
+index c832a38e886c944d2208f0862cd3d37d27007e23..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/x86/libjcore210.so app/src/main/jniLibs/x86/libjcore210.so
+index 1b3721bb93b7a5544adeb3b7b15e970133fb3410..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/mips/libjcore210.so app/src/main/jniLibs/mips/libjcore210.so
+index 52e6dce1a5f0df7b405871b7672cf5fd48901be5..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/libs/jcore-android-2.1.0.jar app/libs/jcore-android-2.1.0.jar
+index 39943094e0fc051006ec02f55473faa43a6a82e7..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/arm64-v8a/libjcore210.so app/src/main/jniLibs/arm64-v8a/libjcore210.so
+index d5ecdc0397feb0abd3b8beae27e2f99a66a49799..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/libs/jpush-android-3.3.4.jar app/libs/jpush-android-3.3.4.jar
+index fef22f869eb3bbd1ebddb58ebc85d2d0a5b9bafd..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/armeabi/libjcore210.so app/src/main/jniLibs/armeabi/libjcore210.so
+index 12d5392a10a52d34282f96b3594777fa522f4e5c..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git app/src/main/jniLibs/armeabi-v7a/libjcore210.so app/src/main/jniLibs/armeabi-v7a/libjcore210.so
+index a7e0d6723672d5c20e74a88d497baf8d111ff54b..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+

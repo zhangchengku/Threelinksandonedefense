@@ -1,14 +1,8 @@
 package com.threelinksandonedefense.myapplication.land;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationManagerCompat;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -44,6 +38,7 @@ public class LandActivity extends MVPBaseActivity<LandContract.View, LandPresent
     LinearLayout landLin;
     private String username = "";
     private String password = "";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +47,7 @@ public class LandActivity extends MVPBaseActivity<LandContract.View, LandPresent
         initview();
         listener();
     }
+
     private void listener() {
         landBu.setOnClickListener(new View.OnClickListener() {
             @Override
