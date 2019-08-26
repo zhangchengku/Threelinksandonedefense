@@ -18,7 +18,7 @@ import com.threelinksandonedefense.myapplication.mvp.BasePresenterImpl;
 public class LandPresenter extends BasePresenterImpl<LandContract.View> implements LandContract.Presenter{
     @Override
     public void Land(String username, String password, Activity Activity) {
-        OkGo.<String>get(Urls.SERVER + "Login")
+        OkGo.<String>get(Urls.SERVER + "GDSTYF/Login")
                 .params("uname", username)
                 .params("pwd", password)
                 .execute(new StringDialogCallback(Activity) {

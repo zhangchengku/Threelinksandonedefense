@@ -150,17 +150,27 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp">
 
                 <ImageView
                     android:id="@+id/handle_img"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_marginLeft="15dp"
                     android:src="@drawable/add" />
-            </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/handle_img"
+                    android:layout_alignTop="@+id/handle_img"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/delete"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -211,7 +221,6 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:hint="请选择"
                     android:id="@+id/ed_routecoding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -219,6 +228,7 @@
                     android:layout_marginLeft="35dp"
                     android:layout_toRightOf="@+id/routecoding_te"
                     android:background="@drawable/edittext_bg"
+                    android:hint="请选择"
                     android:paddingBottom="2dp"
                     android:paddingLeft="15dp"
                     android:paddingTop="2dp"
@@ -233,6 +243,7 @@
                     android:layout_marginRight="10dp"
                     android:src="@drawable/down" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/rel_qdzh"
                 android:layout_width="match_parent"
@@ -258,8 +269,8 @@
                     android:layout_marginLeft="35dp"
                     android:layout_toRightOf="@+id/qdzh_te"
                     android:background="@drawable/edittext_bg"
-                    android:gravity="center_horizontal"
                     android:paddingBottom="2dp"
+                    android:paddingLeft="15dp"
                     android:paddingTop="2dp"
                     android:textColor="@color/text_color"
                     android:textSize="16sp" />
@@ -291,12 +302,13 @@
                     android:layout_marginLeft="35dp"
                     android:layout_toRightOf="@+id/zdzh_te"
                     android:background="@drawable/edittext_bg"
-                    android:gravity="center_horizontal"
                     android:paddingBottom="2dp"
+                    android:paddingLeft="15dp"
                     android:paddingTop="2dp"
                     android:textColor="@color/text_color"
                     android:textSize="16sp" />
             </RelativeLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -305,6 +317,7 @@
                 android:text="现场照片："
                 android:textColor="@color/text_color"
                 android:textSize="16sp" />
+
             <LinearLayout
                 android:id="@+id/disease_new_bh_content_layout"
                 android:layout_width="match_parent"

@@ -115,7 +115,7 @@ public class UpdateManager {
     private void isUpdate() {
         // 获取当前软件版本
         getVersionCode(mContext);
-        OkGo.<String>get(Urls.SERVER + "UpdateVisionInfo")
+        OkGo.<String>get(Urls.SERVER + "GDSTYF/UpdateVisionInfo")
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {

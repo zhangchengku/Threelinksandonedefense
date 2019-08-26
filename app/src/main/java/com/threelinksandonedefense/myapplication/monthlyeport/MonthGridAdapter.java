@@ -199,6 +199,7 @@ public class MonthGridAdapter extends BaseAdapter {
         Matisse.from((MonthlyeportActivity) context)
                 .choose(MimeType.ofAll()) //显示所有文件类型，比如图片和视频，
                 .isCrop(true)//开启裁剪，默认不开启
+                .maxSelectable(1)
                 .forResult(66); //请求码
     }
     /**

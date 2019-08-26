@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/fra_map_serch"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/fra_map_te"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="广东省"
+            android:textColor="@color/theme_color"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="50dp"
+            android:background="#F7F7F7" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:clickable="true"
+            android:completionThreshold="1"
+            android:dropDownHeight="250dp"
+            android:dropDownWidth="240dp"
+            android:fadingEdge="none"
+            android:hint="请输入路线、桥梁、项目名称"
+            android:padding="10dp"
+            android:scrollbars="none"
+            android:singleLine="true"
+            android:textColorHint="#B2B2B2"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/fra_zc"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/map_zc_img" />
+</RelativeLayout>

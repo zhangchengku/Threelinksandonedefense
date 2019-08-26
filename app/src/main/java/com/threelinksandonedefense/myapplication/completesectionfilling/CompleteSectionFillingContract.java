@@ -15,9 +15,13 @@ import com.threelinksandonedefense.myapplication.mvp.BaseRequestView;
 public class CompleteSectionFillingContract {
     interface View extends BaseRequestView {
         void getData(CompleteInitDataBean.DATABean s);
+        void getData2();
+        void getData3();
     }
 
     interface  Presenter extends BasePresenter<View> {
         void initdata(String xmid, Activity Activity);
+        void SaveJdybInfo(String json,String xmmc,   Activity Activity);
+        void addPic(String json, Activity Activity);
     }
 }

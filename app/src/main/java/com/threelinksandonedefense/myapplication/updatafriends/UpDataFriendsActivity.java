@@ -40,6 +40,8 @@ import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
 import com.threelinksandonedefense.myapplication.utils.NoScroolGridView;
 import com.threelinksandonedefense.myapplication.utils.Utils;
 
+import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -140,7 +142,13 @@ public class UpDataFriendsActivity extends MVPBaseActivity<UpDataFriendsContract
     public void getData(List<UpDataInitBean.DATABean> s) {
         roadName.setText(s.get(0).getXmmc());
         roadEdit.setText(s.get(0).getDescription());
-        rqTe.setText(s.get(0).getReportTime());
+        SimpleDateFormat  ssimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            Date date = ssimpleDateFormat.parse(s.get(0).getReportTime());
+           rqTe.setText(simpleDateFormat.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         sgdwTe.setText(s.get(0).getUnitName());
         isBridgeFw.setText(s.get(0).getLocation());
         ID=s.get(0).getID();

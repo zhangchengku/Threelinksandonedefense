@@ -3,6 +3,7 @@ package com.threelinksandonedefense.myapplication.circleoffriends;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -37,10 +38,12 @@ import com.threelinksandonedefense.myapplication.MyApplication;
 import com.threelinksandonedefense.myapplication.R;
 
 import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
+import com.threelinksandonedefense.myapplication.utils.DonwloadSaveImg;
 import com.threelinksandonedefense.myapplication.utils.NoScroolGridView;
 import com.threelinksandonedefense.myapplication.utils.ToastUtils;
 import com.threelinksandonedefense.myapplication.utils.Utils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -288,17 +291,18 @@ public class CircleoffriendsActivity extends MVPBaseActivity<CircleoffriendsCont
                 videoBean.setPic(imgPath);
                 videoBean.setVideo(Matisse.obtainCaptureVideoResult(data));
             }
-            listPicture.remove(listPicture.size() - 1);
-            Bitmap bitmap = Utils.getImageThumbnail(imgPath, Utils.dip2px(CircleoffriendsActivity.this, 480),
-                    Utils.dip2px(CircleoffriendsActivity.this, 480));
-            if (bitmap != null) {
-                Drawable drawable = new BitmapDrawable(bitmap);
-                listPicture.add(drawable);
-                listImgUrl.add(videoBean);
-                Drawable addPicture = getResources().getDrawable(R.drawable.add);
-                listPicture.add(addPicture);
-                addPictureAdapter.notifyDataSetChanged();
-            }
+            DonwloadSaveImg.donwloadImg( CircleoffriendsActivity.this,BitmapFactory.decodeFile(imgPath));
+//            listPicture.remove(listPicture.size() - 1);
+//            Bitmap bitmap = Utils.getImageThumbnail(imgPath, Utils.dip2px(CircleoffriendsActivity.this, 480),
+//                    Utils.dip2px(CircleoffriendsActivity.this, 480));
+//            if (bitmap != null) {
+//                Drawable drawable = new BitmapDrawable(bitmap);
+//                listPicture.add(drawable);
+//                listImgUrl.add(videoBean);
+//                Drawable addPicture = getResources().getDrawable(R.drawable.add);
+//                listPicture.add(addPicture);
+//                addPictureAdapter.notifyDataSetChanged();
+//            }
         }
     }
     @OnClick({R.id.go_back, R.id.yuyin, R.id.rq_te, R.id.add})
@@ -336,7 +340,6 @@ public class CircleoffriendsActivity extends MVPBaseActivity<CircleoffriendsCont
                 friendAddJson.setLocation(isBridgeFw.getText().toString());
                 friendAddJson.setConType(TYPE);
                 String tijiaodates = JSON.toJSONString(friendAddJson);
-                Log.i("图片提交的二", "=====" + tijiaodates);
                 mPresenter.upData(tijiaodates,CircleoffriendsActivity.this);
                 break;
         }

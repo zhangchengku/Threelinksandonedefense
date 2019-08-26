@@ -20,9 +20,10 @@ import com.threelinksandonedefense.myapplication.utils.Utils;
 import java.util.ArrayList;
 
 /**
- * Created by 张成昆 on 2019-6-25.
+ * 采集图片时和病害详情时添加的图片的适配器
+ *
+ * @author xiaoqing
  */
-
 public class CompleteGridAdapter extends BaseAdapter {
 
     private Context context;//上下文对象
@@ -91,9 +92,10 @@ public class CompleteGridAdapter extends BaseAdapter {
         int width = (Utils.getWidth((Activity) context) - Utils.dip2px(context, 10) * 3) / 4;
         LayoutParams params = new LayoutParams(width, width);
         vh.pictureImg.setLayoutParams(params);
+
+        // 判断是否显示图片右上方的删除按钮
+        vh.pictureImg.setImageDrawable(listPicture.get(position));
         if (position == listPicture.size() - 1) {
-            // 判断是否显示图片右上方的删除按钮
-            vh.pictureImg.setImageDrawable(listPicture.get(position));
             vh.pictureCloseImg.setVisibility(View.GONE);
             if (context instanceof CompleteSectionFillingActivity) {
                 vh.pictureImg.setOnClickListener(new OnClickListener() {
@@ -191,9 +193,11 @@ public class CompleteGridAdapter extends BaseAdapter {
      * 从相册获取
      */
     public void getPicFromPhoto() {
+        ((CompleteSectionFillingActivity) context).setChildViewPosition(childViewPosition);
         Matisse.from((CompleteSectionFillingActivity) context)
                 .choose(MimeType.ofAll()) //显示所有文件类型，比如图片和视频，
                 .isCrop(true)//开启裁剪，默认不开启
+                .maxSelectable(1)
                 .forResult(66); //请求码
     }
     /**
@@ -208,3 +212,4 @@ public class CompleteGridAdapter extends BaseAdapter {
     }
 
 }
+

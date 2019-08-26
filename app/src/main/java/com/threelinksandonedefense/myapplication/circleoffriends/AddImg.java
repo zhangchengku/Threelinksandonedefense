@@ -146,7 +146,7 @@ public class AddImg {
             params.put("bytes",pathSBlob);
             if (baseInfo.getVideo()!=null){
                 file = new File(baseInfo.getVideo());
-                OkGo.<String>post(Urls.SERVER + "SaveImgVideo")
+                OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveImgVideo")
                         .params("video",file,baseInfo.getVideo())
                         .params(params)
                         .execute(new StringCallback() {
@@ -166,7 +166,7 @@ public class AddImg {
                             }
                         });
             }else {
-                OkGo.<String>post(Urls.SERVER + "SaveImgVideo")
+                OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveImgVideo")
                         .params(params)
                         .execute(new StringCallback() {
                             @Override

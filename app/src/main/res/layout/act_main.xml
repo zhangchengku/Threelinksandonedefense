@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/buttom_tab"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.xyz.tabitem.BottmTabItem
+            android:id="@+id/main_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:xyzIcon="@drawable/ditu_h_img"
+            app:xyzIconHeight="25dp"
+            app:xyzIconWidth="25dp"
+            app:xyzSelectIcon="@drawable/ditu_img"
+            app:xyzSelectState="true"
+            app:xyzTitle="地图"
+            app:xyzTitleColor="#999999"
+            app:xyzTitleSelectColor="#00ADDF"
+            app:xyzTitleSize="12sp"
+            app:xyzTitleTop="2dp" />
+
+        <com.xyz.tabitem.BottmTabItem
+            android:id="@+id/main_statistics"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:xyzIcon="@drawable/tongji_h_img"
+            app:xyzIconHeight="25dp"
+            app:xyzIconWidth="25dp"
+            app:xyzSelectIcon="@drawable/tongji_img"
+            app:xyzSelectState="false"
+            app:xyzTitle="统计"
+            app:xyzTitleColor="#999999"
+            app:xyzTitleSelectColor="#00ADDF"
+            app:xyzTitleSize="12sp"
+            app:xyzTitleTop="2dp" />
+        <com.xyz.tabitem.BottmTabItem
+            android:id="@+id/main_business"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:xyzIcon="@drawable/yewu_h_img"
+            app:xyzIconHeight="25dp"
+            app:xyzIconWidth="25dp"
+            app:xyzSelectIcon="@drawable/yewu_img"
+            app:xyzSelectState="false"
+            app:xyzTitle="业务"
+            app:xyzTitleColor="#999999"
+            app:xyzTitleSelectColor="#00ADDF"
+            app:xyzTitleSize="12sp"
+            app:xyzTitleTop="2dp" />
+        <com.xyz.tabitem.BottmTabItem
+            android:id="@+id/main_me"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:xyzIcon="@drawable/wode_h_img"
+            app:xyzIconHeight="25dp"
+            app:xyzIconWidth="25dp"
+            app:xyzSelectIcon="@drawable/wode_img"
+            app:xyzSelectState="false"
+            app:xyzTitle="我的"
+            app:xyzTitleColor="#999999"
+            app:xyzTitleSelectColor="#00ADDF"
+            app:xyzTitleSize="12sp"
+            app:xyzTitleTop="2dp" />
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttom_tab" />
+</RelativeLayout>

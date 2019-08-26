@@ -1,35 +1,37 @@
 package com.threelinksandonedefense.myapplication.map;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.MultiPointItem;
+import com.amap.api.maps.model.MultiPointOverlay;
+import com.amap.api.maps.model.MultiPointOverlayOptions;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.district.DistrictItem;
 import com.amap.api.services.district.DistrictResult;
 import com.amap.api.services.district.DistrictSearch;
 import com.amap.api.services.district.DistrictSearchQuery;
+import com.bumptech.glide.Glide;
 import com.threelinksandonedefense.myapplication.R;
 import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
 import com.threelinksandonedefense.myapplication.utils.ToastUtils;
+import com.threelinksandonedefense.myapplication.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,21 +45,85 @@ import butterknife.ButterKnife;
  * MVPPlugin
  * 邮箱 784787081@qq.com
  */
-public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter> implements MapContract.View, DistrictSearch.OnDistrictSearchListener, ClusterRender {
+public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter> implements MapContract.View, DistrictSearch.OnDistrictSearchListener {
+
+
     @Bind(R.id.map)
     MapView mMapView;
-    @Bind(R.id.lin)
-    Button lin;
-    @Bind(R.id.poi)
-    Button poi;
-    @Bind(R.id.pqi)
-    Button pqi;
+    @Bind(R.id.sclerosis20_lay)
+    LinearLayout sclerosis20Lay;
+    @Bind(R.id.sclerosis200_lay)
+    LinearLayout sclerosis200Lay;
+    @Bind(R.id.nobstructed_lay)
+    LinearLayout nobstructedLay;
+    @Bind(R.id.modification_lay)
+    LinearLayout modificationLay;
+    @Bind(R.id.equivalent_lay)
+    LinearLayout equivalentLay;
+    @Bind(R.id.mores_lay)
+    RelativeLayout moresLay;
+    @Bind(R.id.road_lay)
+    LinearLayout roadLay;
+    @Bind(R.id.bridge_lay)
+    LinearLayout bridgeLay;
+    @Bind(R.id.tunnel_lay)
+    LinearLayout tunnelLay;
+    @Bind(R.id.more_lay)
+    LinearLayout moreLay;
+    @Bind(R.id.menu_lay)
+    LinearLayout menuLay;
+    @Bind(R.id.back_lay)
+    RelativeLayout backLay;
+    @Bind(R.id.bridge_name)
+    TextView bridgeName;
+    @Bind(R.id.delete)
+    TextView delete;
+    @Bind(R.id.halving_line)
+    View halvingLine;
+    @Bind(R.id.bridge_img)
+    ImageView bridgeImg;
+    @Bind(R.id.bridge_wz)
+    TextView bridgeWz;
+    @Bind(R.id.bridge_fl)
+    TextView bridgeFl;
+    @Bind(R.id.qc)
+    TextView qc;
+    @Bind(R.id.unstarted_te)
+    TextView unstartedTe;
+    @Bind(R.id.wkg_lay)
+    LinearLayout wkgLay;
+    @Bind(R.id.construction_te)
+    TextView constructionTe;
+    @Bind(R.id.completed_te)
+    TextView completedTe;
+    @Bind(R.id.type_lay)
+    RelativeLayout typeLay;
+    @Bind(R.id.obvious_lay)
+    RelativeLayout obviousLay;
+    @Bind(R.id.time_te)
+    TextView timeTe;
+    @Bind(R.id.sjsj_lay)
+    LinearLayout sjsjLay;
+    @Bind(R.id.wctz_te)
+    TextView wctzTe;
+    @Bind(R.id.wctz_lay)
+    LinearLayout wctzLay;
+    @Bind(R.id.time_lay)
+    RelativeLayout timeLay;
+    @Bind(R.id.state_te)
+    TextView stateTe;
     private AMap aMap = null;
-    private String Token = "CxEPsC3JLlrx4h78bLFjQMBo8pOVTJOJDIdXnaYEBlpJ81iXiIxymn4MrbQbITcg";
+    private String Token = "";
     private Map<Integer, Drawable> mBackDrawAbles = new HashMap<Integer, Drawable>();
     private LatLonPoint centerLatLng;
-    private Polyline polyline;
-    private ClusterOverlay mClusterOverlay;
+    private MultiPointOverlayOptions smallOptions;
+    private MultiPointOverlayOptions largeOptions;
+    private MultiPointOverlayOptions extralargeOptions;
+    private List<MultiPointItem> smalllist = new ArrayList<MultiPointItem>();
+    private List<MultiPointItem> largelist = new ArrayList<MultiPointItem>();
+    private List<MultiPointItem> extralargelist = new ArrayList<MultiPointItem>();
+    private int TYPE;
+    private String Name;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,155 +131,379 @@ public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter>
         setContentView(R.layout.act_map);
         ButterKnife.bind(this);
         mMapView.onCreate(savedInstanceState);
+        Token = getIntent().getStringExtra("Code");
+        if (Token.equals("440000")) {
+            Token = "";
+            Name = "广东省";
+        }else  if (Token.equals("440100")) {
+            Name = "广州市";
+        }else  if (Token.equals("440200")) {
+            Name = "韶关市";
+        }else  if (Token.equals("440300")) {
+            Name = "深圳市";
+        }else  if (Token.equals("440400")) {
+            Name = "珠海市";
+        }else  if (Token.equals("440500")) {
+            Name = "汕头市";
+        }else  if (Token.equals("440600")) {
+            Name = "佛山市";
+        }else  if (Token.equals("440700")) {
+            Name = "江门市";
+        }else  if (Token.equals("440800")) {
+            Name = "湛江市";
+        }else  if (Token.equals("440900")) {
+            Name = "茂名市";
+        }else  if (Token.equals("441200")) {
+            Name = "肇庆市";
+        }else  if (Token.equals("441300")) {
+            Name = "惠州市";
+        }else  if (Token.equals("441400")) {
+            Name = "梅州市";
+        }else  if (Token.equals("441500")) {
+            Name = "汕尾市";
+        }else  if (Token.equals("441600")) {
+            Name = "河源市";
+        }else  if (Token.equals("441700")) {
+            Name = "阳江市";
+        }else  if (Token.equals("441800")) {
+            Name = "清远市";
+        }else  if (Token.equals("441900")) {
+            Name = "东莞市";
+        }else  if (Token.equals("442000")) {
+            Name = "中山市";
+        }else  if (Token.equals("445100")) {
+            Name = "潮州市";
+        }else  if (Token.equals("445200")) {
+            Name = "揭阳市";
+        }else  if (Token.equals("445300")) {
+            Name = "云浮市";
+        }
         initMap();
         initSearch();
         lintener();
     }
 
-    //省份高亮
-    private void initSearch() {
-        DistrictSearch search = new DistrictSearch(MapActivity.this);
-        DistrictSearchQuery query = new DistrictSearchQuery();
-        query.setKeywords("广东省");//传入关键字
-        query.setShowBoundary(true);//是否返回边界值
-        search.setQuery(query);
-        search.setOnDistrictSearchListener(this);//绑定监听器
-        search.searchDistrictAnsy();//开始搜索
-    }
-
     private void lintener() {
-        lin.setOnClickListener(new View.OnClickListener() {
+        equivalentLay.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mPresenter.getData(Token, MapActivity.this);
+            public void onClick(View view) {//等外
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE=6;
+                mPresenter.getSclerosis20("5", Token, MapActivity.this);
             }
         });
-        poi.setOnClickListener(new View.OnClickListener() {
+        modificationLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {//砂石路
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE=5;
+                mPresenter.getSclerosis20("4", Token, MapActivity.this);
+            }
+        });
+        nobstructedLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {//畅返不畅
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE=4;
+                mPresenter.getSclerosis20("3", Token, MapActivity.this);
+            }
+        });
+        sclerosis200Lay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {//200人
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE=3;
+                mPresenter.getSclerosis20("1", Token, MapActivity.this);
+            }
+        });
+        sclerosis20Lay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {//20户
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE = 2;
+                mPresenter.getSclerosis20("2", Token, MapActivity.this);
+            }
+        });
+        moresLay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (moresLay.getVisibility() == View.VISIBLE) {
+                    moresLay.setVisibility(View.GONE);
+                    menuLay.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        backLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        moreLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moresLay.setVisibility(View.VISIBLE);
+                menuLay.setVisibility(View.GONE);
+            }
+        });
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+            }
+        });
+        tunnelLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE = 1;
+                mPresenter.getTunnel(Token, MapActivity.this);
+            }
+        });
+        roadLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        bridgeLay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stateTe.setVisibility(View.GONE);
+                timeLay.setVisibility(View.GONE);
+                typeLay.setVisibility(View.GONE);
+                obviousLay.setVisibility(View.GONE);
+                aMap.clear();
+                initSearch();
+                TYPE = 0;
                 mPresenter.getPoi(Token, MapActivity.this);
             }
         });
-        pqi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.getPqi(Token, MapActivity.this);
-            }
-        });
-    }
-
-    //画线
-    @Override
-    public void getDatas(MdBean.RoadInfo s) {
-        ArrayList<MdBean.LonLatsInfo> listdata = s.getRoad_lon_lat_province().get(0).getRoad_lon_lat_list();
-        List<LatLng> latLngs = new ArrayList<LatLng>();
-        for (int i = 0; i < listdata.size(); i++) {
-            latLngs.add(new LatLng(Double.valueOf(listdata.get(i).getLatitude()), Double.valueOf(listdata.get(i).getLongitude())));
-        }
-        aMap.addPolyline(new PolylineOptions().
-                addAll(latLngs).width(10).color(Color.RED));
     }
 
     //画点
     @Override
-    public void getPois(PoiBean.ResultsBean ss) {
-        List<ClusterItem> items = new ArrayList<ClusterItem>();
-        for (int i = 0; i < ss.getTunnel_next_level().size(); i++) {
-            LatLng latLng = new LatLng(Double.valueOf(ss.getTunnel_next_level().get(i).getLatitude()), Double.valueOf(ss.getTunnel_next_level().get(i).getLongitude()), false);
-            RegionItem regionItem = new RegionItem(latLng,
-                    "test" + i);
-            items.add(regionItem);
+    public void getPois(PoiBean poiBean) {
+        obviousLay.setVisibility(View.VISIBLE);
+        Glide.with(MapActivity.this).load(R.drawable.bridge_te_img).into(bridgeImg);
+        bridgeName.setText("桥梁");
+        bridgeWz.setText("桥梁总数:  " + poiBean.getZS() + "个");
+        bridgeFl.setText("");
+        qc.setText("总里程数:  " + poiBean.getLC() + "km");
+        extralargelist.clear();
+        largelist.clear();
+        smalllist.clear();
+        MultiPointOverlay smallOverlay = aMap.addMultiPointOverlay(smallOptions);
+        MultiPointOverlay largeOverlay = aMap.addMultiPointOverlay(largeOptions);
+        MultiPointOverlay extralargeOverlay = aMap.addMultiPointOverlay(extralargeOptions);
+        for (int i = 0; i < poiBean.getDATA().size(); i++) {
+            if (poiBean.getDATA().get(i).getKjfl().equals("特大桥")) {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                extralargelist.add(multiPointItem);
+            } else if (poiBean.getDATA().get(i).getKjfl().equals("大桥")) {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                largelist.add(multiPointItem);
+            } else {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                smalllist.add(multiPointItem);
+            }
         }
-//        List<ClusterItem> items = new ArrayList<ClusterItem>();
-//        //随机10000个点
-//        for (int i = 0; i < 10000; i++) {
-//            double lat = Math.random() + 39.474923;
-//            double lon = Math.random() + 116.027116;
-//            LatLng latLng = new LatLng(lat, lon, false);
-//            RegionItem regionItem = new RegionItem(latLng,
-//                    "test" + i);
-//            items.add(regionItem);
-//
-//        }
-        mClusterOverlay = new ClusterOverlay(aMap, items,
-                dp2px(getApplicationContext(), 100),
-                getApplicationContext());
-        mClusterOverlay.setClusterRenderer(MapActivity.this);
+        smallOverlay.setItems(smalllist);
+        largeOverlay.setItems(largelist);
+        extralargeOverlay.setItems(extralargelist);
     }
 
     @Override
-    public void getPqis(PqiBean.PCIInfo sss) {
-        ArrayList<PqiBean.RoadPCIInfo>  result =  sss.getRoad_indicator_list().get(0).getRoad_indicator_distribute();
-        for (int i = 0; i < result.size(); i++) {
-            ArrayList<PqiBean.LonLatsInfo> roadLonsLatsInfos = result.get(i).getRoad_lon_lat_list();
-            int indicator_pci_grade = -1;
-            indicator_pci_grade = Integer.valueOf(result.get(i).getIndicator_info().getIndicator_grade());
-            int PCI_color = 0;
-            switch (indicator_pci_grade) {
-                case 1:
-                    PCI_color = Color.rgb(120, 224, 57);
-                    break;
-                case 2:
-                    PCI_color = Color.rgb(97, 251, 231);
-                    break;
-                case 3:
-                    PCI_color = Color.rgb(224, 238, 115);
-                    break;
-                case 4:
-                    PCI_color = Color.rgb(255, 170, 82);
-                    break;
-                case 5:
-                    PCI_color = Color.rgb(250, 84, 2);
-                    break;
-                default:
-                    PCI_color = Color.argb(127, 160, 160, 160);
-                    break;
-            }
-            for (int j = 0; j < roadLonsLatsInfos.size(); j++) {
-                List<LatLng> latLngs = new ArrayList<LatLng>();
-                latLngs.clear();
-                String s_longitude = roadLonsLatsInfos.get(j)
-                        .getLongitude();
-                String s_latitude = roadLonsLatsInfos.get(j)
-                        .getLatitude();
-                String s_longtitude_next = null;
-                String s_latitude_next = null;
-                if (roadLonsLatsInfos.get(j).getEnd_longitude() == null
-                        && j < roadLonsLatsInfos.size() - 1) {
+    public void getPointClicks(List<PointClickBean.DATABean> ss) {
+        bridgeName.setText(ss.get(0).getQlmc());
+        bridgeWz.setText("桥梁位置:  " + ss.get(0).getLxbm() + ss.get(0).getZh());
+        bridgeFl.setText("跨径分类:  " + ss.get(0).getKjfl());
+        qc.setText("桥梁全长:  " + Utils.replaceNull(ss.get(0).getQc() + "") + "m");
+    }
 
-                    s_longtitude_next = roadLonsLatsInfos.get(j + 1)
-                            .getLongitude();
-                    s_latitude_next = roadLonsLatsInfos.get(j + 1)
-                            .getLatitude();
-                } else if (roadLonsLatsInfos.get(j).getEnd_longitude() != null) {
-
-                    s_longtitude_next = roadLonsLatsInfos.get(j)
-                            .getEnd_longitude();
-                    s_latitude_next = roadLonsLatsInfos.get(j)
-                            .getEnd_latitude();
-                } else {
-
-                }
-                double longtitude = Double.valueOf(s_longitude);// 经度
-                double latitude = Double.valueOf(s_latitude);// 纬度
-
-                double longtitude_next = Double
-                        .valueOf(s_longtitude_next);// 下一个点经度
-                double latitude_next = Double.valueOf(s_latitude_next);// 下一个点经度
-                latLngs.add(new LatLng(latitude,longtitude));
-                latLngs.add(new LatLng(latitude_next,longtitude_next));
-                aMap.addPolyline(new PolylineOptions().addAll(latLngs).width(10).color(PCI_color));
-                Log.e( "张成昆: ", PCI_color+"");
+    //隧道
+    @Override
+    public void getTunnels(TunnelBean poiBean) {
+        obviousLay.setVisibility(View.VISIBLE);
+        Glide.with(MapActivity.this).load(R.drawable.tunnel_te_img).into(bridgeImg);
+        bridgeName.setText("隧道");
+        bridgeWz.setText("隧道总数:  " + poiBean.getZS() + "个");
+        bridgeFl.setText("");
+        qc.setText("总里程数:  " + poiBean.getLC() + "km");
+        MultiPointOverlay smallOverlay = aMap.addMultiPointOverlay(smallOptions);
+        MultiPointOverlay largeOverlay = aMap.addMultiPointOverlay(largeOptions);
+        MultiPointOverlay extralargeOverlay = aMap.addMultiPointOverlay(extralargeOptions);
+        extralargelist.clear();
+        largelist.clear();
+        smalllist.clear();
+        for (int i = 0; i < poiBean.getDATA().size(); i++) {
+            if (poiBean.getDATA().get(i).getKjfl().equals("长隧道")) {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                extralargelist.add(multiPointItem);
+            } else if (poiBean.getDATA().get(i).getKjfl().equals("中隧道")) {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                largelist.add(multiPointItem);
+            } else {
+                LatLng latLng = new LatLng(poiBean.getDATA().get(i).getLat(), poiBean.getDATA().get(i).getLon(), false);
+                MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                multiPointItem.setTitle(poiBean.getDATA().get(i).getGuid_obj() + "");
+                smalllist.add(multiPointItem);
             }
         }
+        smallOverlay.setItems(smalllist);
+        largeOverlay.setItems(largelist);
+        extralargeOverlay.setItems(extralargelist);
     }
+
+    @Override
+    public void getTunnelClicks(List<TunnelClickBean.DATABean> ss) {
+        bridgeName.setText(ss.get(0).getSdmc());
+        bridgeWz.setText("隧道位置:  " + ss.get(0).getLxbm() + ss.get(0).getZh());
+        bridgeFl.setText("跨径分类:  " + ss.get(0).getKjfl());
+        qc.setText("隧道全长:  " + Utils.replaceNull(ss.get(0).getSc() + "") + "m");
+    }
+
+    //20户
+    @Override
+    public void getSclerosis20s(Sclerosis20Bean sclerosis20Bean) {
+        if (sclerosis20Bean.getDATA().size()>0){
+            moresLay.setVisibility(View.GONE);
+            menuLay.setVisibility(View.VISIBLE);
+            obviousLay.setVisibility(View.VISIBLE);
+            if (TYPE==2){
+                Glide.with(MapActivity.this).load(R.drawable.sclerosis20_te_img).into(bridgeImg);
+            }else if (TYPE==3){
+                Glide.with(MapActivity.this).load(R.drawable.sclerosis200_te_img).into(bridgeImg);
+            }else if (TYPE==4){
+                Glide.with(MapActivity.this).load(R.drawable.nobstructed_te_img).into(bridgeImg);
+            }else if (TYPE==5){
+                Glide.with(MapActivity.this).load(R.drawable.modification_te_img).into(bridgeImg);
+            }else if (TYPE==6){
+                Glide.with(MapActivity.this).load(R.drawable.equivalent_te_img).into(bridgeImg);
+            }
+            bridgeName.setText(sclerosis20Bean.getDATA().get(0).getXmlx());
+            bridgeWz.setText("统计范围:   " + Name);
+            if (Token.equals("440000")) {
+                bridgeFl.setText("全年计划:   " + sclerosis20Bean.getQNJH() + "公里");
+            }else {
+                bridgeFl.setText("全市计划:   " + sclerosis20Bean.getQNJH() + "公里");
+            }
+            qc.setText("");
+            typeLay.setVisibility(View.VISIBLE);
+            unstartedTe.setText(sclerosis20Bean.getWKG()+"公里");
+            constructionTe.setText(sclerosis20Bean.getZJ()+"公里");
+            completedTe.setText(sclerosis20Bean.getYGW()+"公里");
+            extralargelist.clear();
+            largelist.clear();
+            smalllist.clear();
+            MultiPointOverlay extralargeOverlay = aMap.addMultiPointOverlay(extralargeOptions);
+            for (int i = 0; i < sclerosis20Bean.getDATA().size(); i++) {
+                if (!Utils.isNull(sclerosis20Bean.getDATA().get(i).getLat() + "")) {
+                    LatLng latLng = new LatLng(sclerosis20Bean.getDATA().get(i).getLat(), sclerosis20Bean.getDATA().get(i).getLon(), false);
+                    MultiPointItem multiPointItem = new MultiPointItem(latLng);
+                    multiPointItem.setTitle(sclerosis20Bean.getDATA().get(i).getId() + "");
+                    extralargelist.add(multiPointItem);
+                }
+            }
+            extralargeOverlay.setItems(extralargelist);
+        }
+    }
+
+    @Override
+    public void getSclerosis20Clicks(List<Sclerosis20Click.DATABean> ss) {
+        if (ss.size()>0){
+            typeLay.setVisibility(View.GONE);
+            timeLay.setVisibility(View.VISIBLE);
+            stateTe.setVisibility(View.VISIBLE);
+            bridgeName.setText(ss.get(0).getXmmc());
+            bridgeWz.setText("项目编号：   "+Utils.replaceNull(ss.get(0).getXmbm()));
+            bridgeFl.setText("类型：   "+Utils.replaceNull(ss.get(0).getXmtype()));
+            qc.setText("单位：   "+Utils.replaceNull(ss.get(0).getTbdwmc()));
+            timeTe.setText("数据时间：   "+Utils.replaceNull(ss.get(0).getTbsj()));
+            wctzTe.setText("完成投资：   "+Utils.replaceNull(ss.get(0).getLjwctz()+"")+"万元");
+            stateTe.setText("工程状态：   "+Utils.replaceNull(ss.get(0).getXmjd()));
+        }
+    }
+
     private void initMap() {
-        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         if (aMap == null) {
             aMap = mMapView.getMap();
         }
         aMap.getUiSettings().setRotateGesturesEnabled(false);
         aMap.getUiSettings().setTiltGesturesEnabled(false);
+        smallOptions = new MultiPointOverlayOptions();
+        smallOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bridge_small));
+        smallOptions.anchor(0.125f, 0.125f);
+        largeOptions = new MultiPointOverlayOptions();
+        largeOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bridge_large));
+        largeOptions.anchor(0.25f, 0.5f);
+        extralargeOptions = new MultiPointOverlayOptions();
+        extralargeOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bridge_extralarge));
+        extralargeOptions.anchor(0.5f, 0.5f);
+        // 定义海量点点击事件
+        AMap.OnMultiPointClickListener multiPointClickListener = new AMap.OnMultiPointClickListener() {
+            // 海量点中某一点被点击时回调的接口
+            // 返回 true 则表示接口已响应事件，否则返回false
+            @Override
+            public boolean onPointClick(MultiPointItem pointItem) {
+                if (TYPE == 0) {
+                    mPresenter.getPointClick(pointItem.getTitle(), MapActivity.this);
+                } else if (TYPE == 1) {
+                    mPresenter.getTunnelClick(pointItem.getTitle(), MapActivity.this);
+                } else if (TYPE == 2) {
+                    mPresenter.getSclerosis20Click(pointItem.getTitle(), MapActivity.this);
+                }
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(pointItem.getLatLng());
+                LatLngBounds latLngBounds = builder.build();
+                aMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0));
+                return false;
+            }
+        };
+        // 绑定海量点点击事件
+        aMap.setOnMultiPointClickListener(multiPointClickListener);
     }
 
     @Override
@@ -244,6 +534,17 @@ public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter>
         mMapView.onSaveInstanceState(outState);
     }
 
+    //省份高亮
+    private void initSearch() {
+        DistrictSearch search = new DistrictSearch(MapActivity.this);
+        DistrictSearchQuery query = new DistrictSearchQuery();
+        query.setKeywords(Name);//传入关键字
+        query.setShowBoundary(true);//是否返回边界值
+        search.setQuery(query);
+        search.setOnDistrictSearchListener(this);//绑定监听器
+        search.searchDistrictAnsy();//开始搜索
+    }
+
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             PolylineOptions polylineOption = (PolylineOptions) msg.obj;
@@ -263,7 +564,12 @@ public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter>
         }
         centerLatLng = item.getCenter();//得到行政中心点坐标
         if (centerLatLng != null) {  //地图加载时就显示行政区域
-            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLatLng.getLatitude(), centerLatLng.getLongitude()), 7));//13为缩放级别
+            if (getIntent().getStringExtra("Code").equals("440000")) {
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLatLng.getLatitude(), centerLatLng.getLongitude()), 8));//13为缩放级别
+            } else {
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLatLng.getLatitude(), centerLatLng.getLongitude()), 10));//13为缩放级别
+            }
+
         }
         new Thread() {
             private PolylineOptions polylineOption;
@@ -294,74 +600,13 @@ public class MapActivity extends MVPBaseActivity<MapContract.View, MapPresenter>
                         polylineOption.add(firstLatLng);
                     }
 
-                    polylineOption.width(6).color(Color.BLUE);
+                    polylineOption.width(7).color(Color.BLUE);
                     Message message = handler.obtainMessage();
                     message.obj = polylineOption;
                     handler.sendMessage(message);
                 }
             }
         }.start();
-    }
-
-    public int dp2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
-
-    @Override
-    public Drawable getDrawAble(int clusterNum) {
-        int radius = dp2px(getApplicationContext(), 80);
-        if (clusterNum == 1) {
-            Drawable bitmapDrawable = mBackDrawAbles.get(1);
-            if (bitmapDrawable == null) {
-                bitmapDrawable =
-                        getApplication().getResources().getDrawable(
-                                R.drawable.icon_openmap_mark);
-                mBackDrawAbles.put(1, bitmapDrawable);
-            }
-
-            return bitmapDrawable;
-        } else if (clusterNum < 5) {
-
-            Drawable bitmapDrawable = mBackDrawAbles.get(2);
-            if (bitmapDrawable == null) {
-                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                        Color.argb(159, 210, 154, 6)));
-                mBackDrawAbles.put(2, bitmapDrawable);
-            }
-
-            return bitmapDrawable;
-        } else if (clusterNum < 10) {
-            Drawable bitmapDrawable = mBackDrawAbles.get(3);
-            if (bitmapDrawable == null) {
-                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                        Color.argb(199, 217, 114, 0)));
-                mBackDrawAbles.put(3, bitmapDrawable);
-            }
-
-            return bitmapDrawable;
-        } else {
-            Drawable bitmapDrawable = mBackDrawAbles.get(4);
-            if (bitmapDrawable == null) {
-                bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                        Color.argb(235, 215, 66, 2)));
-                mBackDrawAbles.put(4, bitmapDrawable);
-            }
-
-            return bitmapDrawable;
-        }
-    }
-
-    private Bitmap drawCircle(int radius, int color) {
-
-        Bitmap bitmap = Bitmap.createBitmap(radius * 2, radius * 2,
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        RectF rectF = new RectF(0, 0, radius * 2, radius * 2);
-        paint.setColor(color);
-        canvas.drawArc(rectF, 0, 360, true, paint);
-        return bitmap;
     }
 
     @Override

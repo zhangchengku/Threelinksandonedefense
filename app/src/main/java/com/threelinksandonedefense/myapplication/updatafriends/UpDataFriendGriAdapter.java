@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +23,22 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.threelinksandonedefense.myapplication.BaseBean;
+import com.threelinksandonedefense.myapplication.MyApplication;
 import com.threelinksandonedefense.myapplication.R;
 import com.threelinksandonedefense.myapplication.ShowImgActivity;
 import com.threelinksandonedefense.myapplication.Urls;
 import com.threelinksandonedefense.myapplication.monthlyeport.MinePopupWindow;
 import com.threelinksandonedefense.myapplication.utils.Utils;
+
 import java.util.ArrayList;
-public class UpDataFriendGriAdapter  extends BaseAdapter {
+
+public class UpDataFriendGriAdapter extends BaseAdapter {
     private Context context;//上下文对象
     private ArrayList<Drawable> listPicture;// 图片集合
     private ArrayList<UpVideoBean> listImgUrl = new ArrayList<UpVideoBean>();// 选择的图片地址集合
     private int childViewPosition;
     private MinePopupWindow minePopupWindow;
+
     public ArrayList<UpVideoBean> getListImgUrl() {
         return listImgUrl;
     }
@@ -41,9 +46,11 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
     public ArrayList<Drawable> getListPicture() {
         return listPicture;
     }
+
     private int REQUEST_CODE_CHOOSE = 66;
+
     public UpDataFriendGriAdapter(Context context,
-                                      ArrayList<Drawable> listPicture, ArrayList<UpVideoBean> listImgUrl, int childViewPosition) {
+                                  ArrayList<Drawable> listPicture, ArrayList<UpVideoBean> listImgUrl, int childViewPosition) {
         this.context = context;
         this.listPicture = listPicture;
         this.listImgUrl = listImgUrl;
@@ -51,23 +58,14 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
     }
 
 
-
     @Override
     public int getCount() {
-        if (listPicture != null && listPicture.size() > 0) {
-            return listPicture.size();
-        }else {
-            return 0;
-        }
+        return listPicture.size();
     }
 
     @Override
     public Object getItem(int position) {
-        if (listPicture != null && listPicture.size() > 0) {
-            return listPicture.get(position);
-        }  else {
-            return null;
-        }
+        return listPicture.get(position);
     }
 
     @Override
@@ -99,6 +97,18 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
         vh.pictureImg.setLayoutParams(params);
         if (position == listPicture.size() - 1) {
             vh.pictureImg.setImageDrawable(listPicture.get(position));
+        } else {
+            if (listImgUrl.get(fpos).getPic().startsWith("http")) {
+                Glide.with(context)
+                        .load(listImgUrl.get(fpos).getPic())
+                        .into(vh.pictureImg);
+            } else {
+                vh.pictureImg.setImageDrawable(listPicture.get(position));
+            }
+        }
+
+//        vh.pictureImg.setImageDrawable(listPicture.get(position));
+        if (position == listPicture.size() - 1) {
             vh.pictureCloseImg.setVisibility(View.GONE);
             vh.bofang.setVisibility(View.GONE);
             if (context instanceof UpDataFriendsActivity) {
@@ -109,18 +119,15 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
                             minePopupWindow = new MinePopupWindow((UpDataFriendsActivity) context, itemOnClick);
                         }
                         minePopupWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
-                        Utils.hideInputWindow((UpDataFriendsActivity)context);
+                        Utils.hideInputWindow((UpDataFriendsActivity) context);
                     }
                 });
             }
         } else {
-            Glide.with(context)
-                    .load(listImgUrl.get(fpos).getPic())
-                    .into(vh.pictureImg);
             vh.pictureImg.setOnClickListener(null);
-            if (Utils.isNull(listImgUrl.get(fpos).getVideo())){
+            if (Utils.isNull(listImgUrl.get(fpos).getVideo())) {
                 vh.bofang.setVisibility(View.GONE);
-            }else {
+            } else {
                 vh.bofang.setVisibility(View.VISIBLE);
             }
             vh.pictureCloseImg.setVisibility(View.VISIBLE);
@@ -129,8 +136,8 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
 
                 @Override
                 public void onClick(View v) {
-                    if(!Utils.isNull(listImgUrl.get(fpos).getCJID())){
-                        OkGo.<String>post(Urls.SERVER + "DeleteFiles")
+                    if (!Utils.isNull(listImgUrl.get(fpos).getCJID())) {
+                        OkGo.<String>post(Urls.SERVER + "GDSTYF/DeleteFiles")
                                 .params("guid", listImgUrl.get(fpos).getCJID())
                                 .execute(new StringCallback() {
                                     @Override
@@ -171,14 +178,7 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        if (listPicture != null) {
-            if (listPicture.size() > 0) {
-                return listPicture.size();
-            } else {
-                return 1;
-            }
-        }
-        return 1;
+        return listPicture.size();
     }
 
     @Override
@@ -224,8 +224,10 @@ public class UpDataFriendGriAdapter  extends BaseAdapter {
         Matisse.from((UpDataFriendsActivity) context)
                 .choose(MimeType.ofImage()) //显示所有文件类型，比如图片和视频，
                 .isCrop(true)//开启裁剪，默认不开启
+                .maxSelectable(1)
                 .forResult(REQUEST_CODE_CHOOSE); //请求码
     }
+
     /**
      * 照相获取
      */

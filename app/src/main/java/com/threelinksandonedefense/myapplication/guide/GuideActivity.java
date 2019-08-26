@@ -10,11 +10,8 @@ import com.threelinksandonedefense.myapplication.MainActivity;
 import com.threelinksandonedefense.myapplication.MyApplication;
 import com.threelinksandonedefense.myapplication.R;
 import com.threelinksandonedefense.myapplication.Tadk;
-import com.threelinksandonedefense.myapplication.circleoffriends.CircleoffriendsActivity;
-import com.threelinksandonedefense.myapplication.completesectionfilling.CompleteSectionFillingActivity;
 import com.threelinksandonedefense.myapplication.land.LandActivity;
-import com.threelinksandonedefense.myapplication.map.MapActivity;
-import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
+import com.threelinksandonedefense.myapplication.mains.MainsActivity;
 import com.threelinksandonedefense.myapplication.mvp.MVPBaseActivity;
 import com.threelinksandonedefense.myapplication.utils.Utils;
 
@@ -49,7 +46,7 @@ public class GuideActivity extends MVPBaseActivity<GuideContract.View, GuidePres
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(GuideActivity.this, MapActivity.class);
+                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     }

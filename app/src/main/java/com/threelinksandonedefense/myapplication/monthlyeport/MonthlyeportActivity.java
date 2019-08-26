@@ -436,6 +436,7 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
         Matisse.from(MonthlyeportActivity.this)
                 .choose(MimeType.ofAll()) //显示所有文件类型，比如图片和视频，
                 .isCrop(true)//开启裁剪，默认不开启
+                .maxSelectable(1)
                 .forResult(REQUEST_CODE); //请求码
     }
 
@@ -472,11 +473,13 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
         saveJson.setWwcpfm(Utils.rerurn0(edIncompletesquare.getText().toString()));
         saveJson.setDywctz(Utils.rerurn0(edMonthinvestment.getText().toString()));
         saveJson.setLjdwzj(Utils.rerurn0(edFunds.getText().toString()));//累计到位资金
+
         saveJson.setLjdwzyzj(Utils.rerurn0(edCentralinvestment.getText().toString()));
         saveJson.setLjdwstz(Utils.rerurn0(edProvincialInvestment.getText().toString()));
-        saveJson.setLjdwxjpt(Utils.rerurn0(edCitymatching.getText().toString()));
-        saveJson.setLjdwczjpt(Utils.rerurn0(edCountymatching.getText().toString()));
+        saveJson.setLjdwsjpt(Utils.rerurn0(edCitymatching.getText().toString()));
+        saveJson.setLjdwxjpt(Utils.rerurn0(edCountymatching.getText().toString()));
         saveJson.setLjdwczjpt(Utils.rerurn0(edVillagematching.getText().toString()));
+
         saveJson.setLjwctz(Utils.rerurn0(edInvestment.getText().toString()));//累计完成资金
         saveJson.setLjwczytz(Utils.rerurn0(edCentralinvestment2.getText().toString()));
         saveJson.setLjwcstz(Utils.rerurn0(edProvincialinvestment2.getText().toString()));
@@ -499,7 +502,7 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
         mPresenter.SaveJdybInfo(json, MonthlyeportActivity.this);
     }
 
-    private int edCentralinvestments2, edProvincialInvestments2, edCitymatchings2, edCountymatchings2, edVillagematchings2;
+    private double edCentralinvestments2, edProvincialInvestments2, edCitymatchings2, edCountymatchings2, edVillagematchings2;
     private TextWatcher textWatcher2 = new TextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
@@ -512,35 +515,35 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (Utils.isNull(edCentralinvestment2.getText().toString())) {
-                edCentralinvestments2 = 0;
+                edCentralinvestments2 = 0.0;
             } else {
-                edCentralinvestments2 = Integer.parseInt(edCentralinvestment2.getText().toString());
+                edCentralinvestments2 = Double.valueOf(edCentralinvestment2.getText().toString());
             }
 
             if (Utils.isNull(edProvincialinvestment2.getText().toString())) {
-                edProvincialInvestments2 = 0;
+                edProvincialInvestments2 = 0.0;
             } else {
-                edProvincialInvestments2 = Integer.parseInt(edProvincialinvestment2.getText().toString());
+                edProvincialInvestments2 = Double.valueOf(edProvincialinvestment2.getText().toString());
             }
             if (Utils.isNull(edCitymatching2.getText().toString())) {
                 edCitymatchings2 = 0;
             } else {
-                edCitymatchings2 = Integer.parseInt(edCitymatching2.getText().toString());
+                edCitymatchings2 = Double.valueOf(edCitymatching2.getText().toString());
             }
             if (Utils.isNull(edCountymatching2.getText().toString())) {
-                edCountymatchings2 = 0;
+                edCountymatchings2 = 0.0;
             } else {
-                edCountymatchings2 = Integer.parseInt(edCountymatching2.getText().toString());
+                edCountymatchings2 = Double.valueOf(edCountymatching2.getText().toString());
             }
             if (Utils.isNull(edVillagematching2.getText().toString())) {
-                edVillagematchings2 = 0;
+                edVillagematchings2 = 0.0;
             } else {
-                edVillagematchings2 = Integer.parseInt(edVillagematching2.getText().toString());
+                edVillagematchings2 = Double.valueOf(edVillagematching2.getText().toString());
             }
             edInvestment.setText(edCentralinvestments2 + edProvincialInvestments2 + edCitymatchings2 + edCountymatchings2 + edVillagematchings2 + "");
         }
     };
-    private int edCentralinvestments, edProvincialInvestments, edCitymatchings, edCountymatchings, edVillagematchings;
+    private double edCentralinvestments, edProvincialInvestments, edCitymatchings, edCountymatchings, edVillagematchings;
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
@@ -553,29 +556,29 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (Utils.isNull(edCentralinvestment.getText().toString())) {
-                edCentralinvestments = 0;
+                edCentralinvestments = 0.0;
             } else {
-                edCentralinvestments = Integer.parseInt(edCentralinvestment.getText().toString());
+                edCentralinvestments = Double.valueOf(edCentralinvestment.getText().toString());
             }
             if (Utils.isNull(edProvincialInvestment.getText().toString())) {
-                edProvincialInvestments = 0;
+                edProvincialInvestments = 0.0;
             } else {
-                edProvincialInvestments = Integer.parseInt(edProvincialInvestment.getText().toString());
+                edProvincialInvestments = Double.valueOf(edProvincialInvestment.getText().toString());
             }
             if (Utils.isNull(edCitymatching.getText().toString())) {
-                edCitymatchings = 0;
+                edCitymatchings = 0.0;
             } else {
-                edCitymatchings = Integer.parseInt(edCitymatching.getText().toString());
+                edCitymatchings = Double.valueOf(edCitymatching.getText().toString());
             }
             if (Utils.isNull(edCountymatching.getText().toString())) {
-                edCountymatchings = 0;
+                edCountymatchings = 0.0;
             } else {
-                edCountymatchings = Integer.parseInt(edCountymatching.getText().toString());
+                edCountymatchings = Double.valueOf(edCountymatching.getText().toString());
             }
             if (Utils.isNull(edVillagematching.getText().toString())) {
-                edVillagematchings = 0;
+                edVillagematchings = 0.0;
             } else {
-                edVillagematchings = Integer.parseInt(edVillagematching.getText().toString());
+                edVillagematchings = Double.valueOf(edVillagematching.getText().toString());
             }
             edFunds.setText(edCentralinvestments + edProvincialInvestments + edCitymatchings + edCountymatchings + edVillagematchings + "");
         }
@@ -622,6 +625,15 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
                 if (tx.equals("已完工")) {
                     relCheck.setVisibility(View.VISIBLE);
                     relEvaluate.setVisibility(View.VISIBLE);
+                }else if (tx.equals("在建")){
+                    relCheck.setVisibility(View.GONE);
+                    relEvaluate.setVisibility(View.GONE);
+                }else if (tx.equals("交竣工")){
+                    relCheck.setVisibility(View.GONE);
+                    relEvaluate.setVisibility(View.GONE);
+                }else if (tx.equals("未开工")){
+                    relCheck.setVisibility(View.GONE);
+                    relEvaluate.setVisibility(View.GONE);
                 }
                 textview.setText(tx);
             }
@@ -658,135 +670,138 @@ public class MonthlyeportActivity extends MVPBaseActivity<MonthlyeportContract.V
 
     @Override
     public void getData(InitDataBean DataBean) {
-        InitDataBean.DATABean initDataBean = DataBean.getDATA().get(0);
-        if (!Utils.isNull(initDataBean.getXmtbtype())) {
-            if (initDataBean.getXmtbtype().equals("2")) {
-                relCompletedbridge.setVisibility(View.VISIBLE);
-                relIncompletebridge.setVisibility(View.VISIBLE);
-            } else {
-                relCompletedsquare.setVisibility(View.VISIBLE);
-                relIncompletesquare.setVisibility(View.VISIBLE);
-            }
-        }
-        InitDataBeans = initDataBean;
-        itemNumber.setText(Utils.replaceNull(initDataBean.getXmbm()));
-        district.setText(Utils.replaceNull(initDataBean.getSzxzqh()));
-        company.setText(Utils.replaceNull(initDataBean.getTbdwmc()));
-        if (!Utils.isNull(initDataBean.getXmimage())) {
-            Glide.with(this).load(initDataBean.getXmimage()).into(handleimg);
-            Pic = initDataBean.getXmimage();
-            delete.setVisibility(View.VISIBLE);
-        }
-        Calendar calendar = Calendar.getInstance();
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDate = simpleDateFormat.format(calendar.getTime());
-        teMonth.setText(currentDate);//默认日期
-        if (!Utils.isNull(initDataBean.getYjwcsj())) {
-            teTime.setText(initDataBean.getYjwcsj());
-        } else {
-            teTime.setText(currentDate);//默认日期
-        }
-        teFiller.setText(Utils.replaceNull(MyApplication.spUtils.getString("UserName")));
-        if (!Utils.isNull(initDataBean.getSfys())) {
-            edCheck.setText(initDataBean.getSfys());
-        } else {
-            edCheck.setText("是");
-        }
-        if (!Utils.isNull(initDataBean.getZlpd())) {
-            edEvaluate.setText(initDataBean.getZlpd());
-        } else {
-            edEvaluate.setText("未评定");
-        }
-        if (!Utils.isNull(initDataBean.getWcqlgs())) {
-            edCompletedbridge.setText(initDataBean.getWcqlgs());
-        }
-        if (!Utils.isNull(initDataBean.getWwcqlgs())) {
-            edIncompletebridge.setText(initDataBean.getWwcqlgs());
-        }
-        if (!Utils.isNull(initDataBean.getWcpfm())) {
-            edCompletedsquare.setText(initDataBean.getWcpfm());
-        }
-        if (!Utils.isNull(initDataBean.getWwcpfm())) {
-            edIncompletesquare.setText(initDataBean.getWwcpfm());
-        }
-        if (!Utils.isNull(initDataBean.getDywctz())) {
-            edMonthinvestment.setText(initDataBean.getDywctz());
-        }
-        if (!Utils.isNull(initDataBean.getLjdwzj())) {//累计到位资金
-            edFunds.setText(initDataBean.getLjdwzj());
-            Ljdwzj = initDataBean.getLjdwzj();
-        }
-        if (!Utils.isNull(initDataBean.getLjdwzyzj())) {//中央投资
-            edCentralinvestment.setText(initDataBean.getLjdwzyzj());
-        }
-        if (!Utils.isNull(initDataBean.getLjdwstz())) {//省
-            edProvincialInvestment.setText(initDataBean.getLjdwstz());
-        }
-        if (!Utils.isNull(initDataBean.getLjdwsjpt())) {//市
-            edCitymatching.setText(initDataBean.getLjdwsjpt());
-        }
-        if (!Utils.isNull(initDataBean.getLjdwxjpt())) {//县
-            edCountymatching.setText(initDataBean.getLjdwxjpt());
-        }
-        if (!Utils.isNull(initDataBean.getLjdwczjpt())) {//村
-            edVillagematching.setText(initDataBean.getLjdwczjpt());
-        }
-        if (!Utils.isNull(initDataBean.getLjwctz())) {//累计完成资金
-            edInvestment.setText(initDataBean.getLjwctz());
-            Ljwctz = initDataBean.getLjwctz();
-        }
-        if (!Utils.isNull(initDataBean.getLjwczytz())) {//中央
-            edCentralinvestment2.setText(initDataBean.getLjwczytz());
-        }
-        if (!Utils.isNull(initDataBean.getLjwcstz())) {//省
-            edProvincialinvestment2.setText(initDataBean.getLjwcstz());
-        }
-        if (!Utils.isNull(initDataBean.getLjwcsjpt())) {//市
-            edCitymatching2.setText(initDataBean.getLjwcsjpt());
-        }
-        if (!Utils.isNull(initDataBean.getLjwcxjpt())) {//县
-            edCountymatching2.setText(initDataBean.getLjwcxjpt());
-        }
-        if (!Utils.isNull(initDataBean.getLjwcczjpt())) {//市
-            edVillagematching2.setText(initDataBean.getLjwcczjpt());
-        }
-        if (DataBean.getCOMDATA().size() > 0) {
-            for (int i = 0; i < DataBean.getCOMDATA().size(); i++) {
-                progressItems.add(DataBean.getCOMDATA().get(i).getZdName());
-                if (i == 0) {
-                    edProgress.setText(DataBean.getCOMDATA().get(i).getZdName());
+        if (DataBean.getDATA().size()>0){
+            InitDataBean.DATABean initDataBean = DataBean.getDATA().get(0);
+            if (!Utils.isNull(initDataBean.getXmtbtype())) {
+                if (initDataBean.getXmtbtype().equals("2")) {
+                    relCompletedbridge.setVisibility(View.VISIBLE);
+                    relIncompletebridge.setVisibility(View.VISIBLE);
+                } else {
+                    relCompletedsquare.setVisibility(View.VISIBLE);
+                    relIncompletesquare.setVisibility(View.VISIBLE);
                 }
             }
-            if (DataBean.getCOMDATA().get(0).getZdName().equals("已完工")) {
-                relCheck.setVisibility(View.VISIBLE);
-                relEvaluate.setVisibility(View.VISIBLE);
+            InitDataBeans = initDataBean;
+            itemNumber.setText(Utils.replaceNull(initDataBean.getXmbm()));
+            district.setText(Utils.replaceNull(initDataBean.getSzxzqh()));
+            company.setText(Utils.replaceNull(initDataBean.getTbdwmc()));
+            if (!Utils.isNull(initDataBean.getXmimage())) {
+                Glide.with(this).load(initDataBean.getXmimage()).into(handleimg);
+                Pic = initDataBean.getXmimage();
+                delete.setVisibility(View.VISIBLE);
             }
-        }
-        if (!Utils.isNull(initDataBean.getSfmsxm())) {
-            if (initDataBean.getSfmsxm().equals("是")) {
-                switch1.setChecked(true);
-                Sfmsxm = "是";
+            Calendar calendar = Calendar.getInstance();
+            simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = simpleDateFormat.format(calendar.getTime());
+            teMonth.setText(currentDate);//默认日期
+            if (!Utils.isNull(initDataBean.getYjwcsj())) {
+                teTime.setText(initDataBean.getYjwcsj());
             } else {
-                switch1.setChecked(false);
-                Sfmsxm = "否";
+                teTime.setText(currentDate);//默认日期
             }
-        }
-        if (!Utils.isNull(initDataBean.getGcjzsm())) {
-            explainEt.setText(initDataBean.getGcjzsm());
-        }
-        if (!Utils.isNull(initDataBean.getDywcxx())) {
-            informationEt.setText(initDataBean.getDywcxx());
-        }
-        if (!Utils.isNull(initDataBean.getIssync())) {
-            if (initDataBean.getIssync().equals("1")) {
-                switch2.setChecked(true);
-                Issync = "1";
+            teFiller.setText(Utils.replaceNull(MyApplication.spUtils.getString("UserName")));
+            if (!Utils.isNull(initDataBean.getSfys())) {
+                edCheck.setText(initDataBean.getSfys());
             } else {
-                switch2.setChecked(false);
-                Issync = "0";
+                edCheck.setText("是");
             }
+            if (!Utils.isNull(initDataBean.getZlpd())) {
+                edEvaluate.setText(initDataBean.getZlpd());
+            } else {
+                edEvaluate.setText("未评定");
+            }
+            if (!Utils.isNull(initDataBean.getWcqlgs())) {
+                edCompletedbridge.setText(initDataBean.getWcqlgs());
+            }
+            if (!Utils.isNull(initDataBean.getWwcqlgs())) {
+                edIncompletebridge.setText(initDataBean.getWwcqlgs());
+            }
+            if (!Utils.isNull(initDataBean.getWcpfm())) {
+                edCompletedsquare.setText(initDataBean.getWcpfm());
+            }
+            if (!Utils.isNull(initDataBean.getWwcpfm())) {
+                edIncompletesquare.setText(initDataBean.getWwcpfm());
+            }
+            if (!Utils.isNull(initDataBean.getDywctz())) {
+                edMonthinvestment.setText(initDataBean.getDywctz());
+            }
+            if (!Utils.isNull(initDataBean.getLjdwzj())) {//累计到位资金
+                edFunds.setText(initDataBean.getLjdwzj());
+                Ljdwzj = initDataBean.getLjdwzj();
+            }
+            if (!Utils.isNull(initDataBean.getLjdwzyzj())) {//中央投资
+                edCentralinvestment.setText(initDataBean.getLjdwzyzj());
+            }
+            if (!Utils.isNull(initDataBean.getLjdwstz())) {//省
+                edProvincialInvestment.setText(initDataBean.getLjdwstz());
+            }
+            if (!Utils.isNull(initDataBean.getLjdwsjpt())) {//市
+                edCitymatching.setText(initDataBean.getLjdwsjpt());
+            }
+            if (!Utils.isNull(initDataBean.getLjdwxjpt())) {//县
+                edCountymatching.setText(initDataBean.getLjdwxjpt());
+            }
+            if (!Utils.isNull(initDataBean.getLjdwczjpt())) {//村
+                edVillagematching.setText(initDataBean.getLjdwczjpt());
+            }
+            if (!Utils.isNull(initDataBean.getLjwctz())) {//累计完成资金
+                edInvestment.setText(initDataBean.getLjwctz());
+                Ljwctz = initDataBean.getLjwctz();
+            }
+            if (!Utils.isNull(initDataBean.getLjwczytz())) {//中央
+                edCentralinvestment2.setText(initDataBean.getLjwczytz());
+            }
+            if (!Utils.isNull(initDataBean.getLjwcstz())) {//省
+                edProvincialinvestment2.setText(initDataBean.getLjwcstz());
+            }
+            if (!Utils.isNull(initDataBean.getLjwcsjpt())) {//市
+                edCitymatching2.setText(initDataBean.getLjwcsjpt());
+            }
+            if (!Utils.isNull(initDataBean.getLjwcxjpt())) {//县
+                edCountymatching2.setText(initDataBean.getLjwcxjpt());
+            }
+            if (!Utils.isNull(initDataBean.getLjwcczjpt())) {//市
+                edVillagematching2.setText(initDataBean.getLjwcczjpt());
+            }
+            if (DataBean.getCOMDATA().size() > 0) {
+                for (int i = 0; i < DataBean.getCOMDATA().size(); i++) {
+                    progressItems.add(DataBean.getCOMDATA().get(i).getZdName());
+                    if (i == 0) {
+                        edProgress.setText(DataBean.getCOMDATA().get(i).getZdName());
+                    }
+                }
+                if (DataBean.getCOMDATA().get(0).getZdName().equals("已完工")) {
+                    relCheck.setVisibility(View.VISIBLE);
+                    relEvaluate.setVisibility(View.VISIBLE);
+                }
+            }
+            if (!Utils.isNull(initDataBean.getSfmsxm())) {
+                if (initDataBean.getSfmsxm().equals("是")) {
+                    switch1.setChecked(true);
+                    Sfmsxm = "是";
+                } else {
+                    switch1.setChecked(false);
+                    Sfmsxm = "否";
+                }
+            }
+            if (!Utils.isNull(initDataBean.getGcjzsm())) {
+                explainEt.setText(initDataBean.getGcjzsm());
+            }
+            if (!Utils.isNull(initDataBean.getDywcxx())) {
+                informationEt.setText(initDataBean.getDywcxx());
+            }
+            if (!Utils.isNull(initDataBean.getIssync())) {
+                if (initDataBean.getIssync().equals("1")) {
+                    switch2.setChecked(true);
+                    Issync = "1";
+                } else {
+                    switch2.setChecked(false);
+                    Issync = "0";
+                }
+            }
+            initview();
         }
-        initview();
+
     }
 
     @Override

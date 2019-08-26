@@ -25,6 +25,7 @@ import com.lxj.matisse.CaptureMode;
 import com.lxj.matisse.Matisse;
 import com.lxj.matisse.MimeType;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.threelinksandonedefense.myapplication.callback.StringDialogCallback;
 import com.threelinksandonedefense.myapplication.circleoffriends.CircleoffriendsActivity;
@@ -34,6 +35,7 @@ import com.threelinksandonedefense.myapplication.completesectionfilling.Complete
 import com.threelinksandonedefense.myapplication.dialog.CommBtnListener;
 import com.threelinksandonedefense.myapplication.dialog.CommNotificationDialog;
 import com.threelinksandonedefense.myapplication.land.LandActivity;
+import com.threelinksandonedefense.myapplication.map.MapActivity;
 import com.threelinksandonedefense.myapplication.monthlyeport.MinePopupWindow;
 import com.threelinksandonedefense.myapplication.monthlyeport.MonthlyeportActivity;
 import com.threelinksandonedefense.myapplication.updatafriends.UpDataFriendsActivity;
@@ -49,7 +51,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import cn.jpush.android.api.JPushInterface;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        JPushInterface.init(getApplicationContext());
         //启用数据库
         mWebview.getSettings().setDatabaseEnabled(true);
 
@@ -173,21 +174,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @JavascriptInterface//跳转完成路段
-        public void goComplete(String xmid) {
+        public void goComplete(String xmid, String name, String jdybid) {
             Intent intent = new Intent(MainActivity.this, CompleteSectionFillingActivity.class);
             intent.putExtra("xmid", xmid);
-            startActivityForResult(intent, REQUEST_MONTH);
-        }
-
-        @JavascriptInterface//跳转朋友圈
-        public void goReporting(String xmid) {
-            Intent intent = new Intent(MainActivity.this, CompleteSectionFillingActivity.class);
-            intent.putExtra("xmid", xmid);
+            intent.putExtra("name", name);
+            intent.putExtra("jdybid", jdybid);
             startActivityForResult(intent, REQUEST_MONTH);
         }
 
         @JavascriptInterface//跳转进度月报
-        public void goMonth(String xmid,String name) {
+        public void goMonth(String xmid, String name) {
             Intent intent = new Intent(MainActivity.this, MonthlyeportActivity.class);
             intent.putExtra("xmid", xmid);
             intent.putExtra("name", name);
@@ -231,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             logoutWarmDialog.show();
         }
 
-        @JavascriptInterface//退出登陆
+        @JavascriptInterface//跳转到朋友圈
         public void getFriend(String code, String name) {
             Intent intent = new Intent(MainActivity.this, CircleoffriendsActivity.class);
             intent.putExtra("code", code);
@@ -259,6 +255,24 @@ public class MainActivity extends AppCompatActivity {
                 minePopupWindow = new MinePopupWindow(MainActivity.this, itemOnClick);
             }
             minePopupWindow.showAtLocation(relativeLayout, Gravity.BOTTOM, 0, 0);
+        }
+
+        @JavascriptInterface//跳转地图海量点
+        public void goMap(String Code, String Name) {
+            OkGo.<String>get(Urls.SERVER+"GDSTYF/QueryAreaCode")
+                    .params("code",Code)
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            CodeBean poiBean = JSON.parseObject(response.body(),CodeBean.class);
+                            String strhours =poiBean.getDATA().get(0).getPost();
+                            String strm = strhours.substring(0,strhours.length()-2);   //截掉
+                            Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                            intent.putExtra("Code", strm+"00");
+                            intent.putExtra("Name", strm+"00");
+                            startActivity(intent);
+                        }
+                    });
         }
     }
 
@@ -308,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
         Matisse.from(MainActivity.this)
                 .choose(MimeType.ofAll()) //显示所有文件类型，比如图片和视频，
                 .isCrop(true)//开启裁剪，默认不开启
+                .maxSelectable(1)
                 .forResult(REQUEST_CODE_CHOOSE); //请求码
     }
 
@@ -328,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
             String imgPath = Matisse.obtainCropResult(data);
             String strBlob = Utils.bmpToBase64String(imgPath);
             if (Utils.isNull(XMID) && !Utils.isNull(userId)) {
-                OkGo.<String>post(Urls.SERVER + "UpdateUserPhoto")
+                OkGo.<String>post(Urls.SERVER + "GDSTYF/UpdateUserPhoto")
                         .params("userId", userId)
                         .params("bytes", strBlob)
                         .execute(new StringDialogCallback(MainActivity.this) {
@@ -349,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
                 PICjson.setXmid(XMID);
                 PICjson.setPicList(piclist);
                 String json = JSON.toJSONString(PICjson);
-                OkGo.<String>post(Urls.SERVER + "SaveXmImageInfo")
+                OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveXmImageInfo")
                         .params("json", json)
                         .execute(new StringDialogCallback(MainActivity.this) {
                             @Override
@@ -372,7 +387,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
                     String result = bundle.getString(CodeUtils.RESULT_STRING);
-                    Log.e("张成昆", "http://106.37.229.146:7109/XMLB/dynamic.html?xmid=" + result.split("\\|")[0] + "&xmmc=" + result.split("\\|")[1]);
                     mWebview.loadUrl("http://106.37.229.146:7109/XMLB/dynamic.html?xmid=" + result.split("\\|")[0] + "&xmmc=" + result.split("\\|")[1]);
 
                 } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
@@ -385,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     protected void onResume() {
         isForeground = true;

@@ -68,7 +68,7 @@ public class UpDataInitBean {
         private String Lon;
         private String Lat;
         private String Location;
-        private int COMPLETION;
+        private String COMPLETION;
         private Object COMPLETIONNAME;
         private String files;
 
@@ -152,11 +152,11 @@ public class UpDataInitBean {
             this.Location = Location;
         }
 
-        public int getCOMPLETION() {
+        public String getCOMPLETION() {
             return COMPLETION;
         }
 
-        public void setCOMPLETION(int COMPLETION) {
+        public void setCOMPLETION(String COMPLETION) {
             this.COMPLETION = COMPLETION;
         }
 

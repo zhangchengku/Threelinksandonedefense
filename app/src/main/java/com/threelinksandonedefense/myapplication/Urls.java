@@ -5,5 +5,5 @@ package com.threelinksandonedefense.myapplication;
  */
 
 public class Urls {
-    public static final String SERVER = "http://106.37.229.146:7106/GDSTYF/";
+    public static final String SERVER = "http://106.37.229.146:7106/";
 }

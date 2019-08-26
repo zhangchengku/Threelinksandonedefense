@@ -20,7 +20,7 @@ import com.threelinksandonedefense.myapplication.mvp.BasePresenterImpl;
 public class CircleoffriendsPresenter extends BasePresenterImpl<CircleoffriendsContract.View> implements CircleoffriendsContract.Presenter{
     @Override
     public void upData(String json,  Activity Activity) {
-        OkGo.<String>post(Urls.SERVER + "SaveCjInfo")
+        OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveCjInfo")
                 .params("json", json)
                 .execute(new StringDialogCallback(Activity) {
                     @Override

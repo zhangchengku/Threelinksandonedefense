@@ -18,7 +18,7 @@ import com.threelinksandonedefense.myapplication.mvp.BasePresenterImpl;
 public class MonthlyeportPresenter extends BasePresenterImpl<MonthlyeportContract.View> implements MonthlyeportContract.Presenter{
     @Override
     public void initdata(String xmid,  Activity Activity) {
-        OkGo.<String>get(Urls.SERVER + "InitJdybInfo")
+        OkGo.<String>get(Urls.SERVER + "GDSTYF/InitJdybInfo")
                 .params("xmid", xmid)
                 .execute(new StringDialogCallback(Activity) {
                     @Override
@@ -36,7 +36,7 @@ public class MonthlyeportPresenter extends BasePresenterImpl<MonthlyeportContrac
     }
     @Override
     public void SaveJdybInfo(String json,  Activity Activity) {
-        OkGo.<String>post(Urls.SERVER + "SaveJdybInfo")
+        OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveJdybInfo")
                 .params("json", json)
                 .execute(new StringDialogCallback(Activity) {
                     @Override
@@ -54,7 +54,7 @@ public class MonthlyeportPresenter extends BasePresenterImpl<MonthlyeportContrac
     }
     @Override
     public void addPic(String json,  Activity Activity) {
-        OkGo.<String>post(Urls.SERVER + "SaveXmJdImageInfo")
+        OkGo.<String>post(Urls.SERVER + "GDSTYF/SaveXmJdImageInfo")
                 .params("json", json)
                 .execute(new StringDialogCallback(Activity) {
                     @Override

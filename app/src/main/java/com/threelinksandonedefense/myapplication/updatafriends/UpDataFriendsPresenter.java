@@ -19,7 +19,7 @@ import com.threelinksandonedefense.myapplication.mvp.BasePresenterImpl;
 public class UpDataFriendsPresenter extends BasePresenterImpl<UpDataFriendsContract.View> implements UpDataFriendsContract.Presenter{
     @Override
     public void initData(String cjid,  Activity Activity) {
-        OkGo.<String>get(Urls.SERVER + "QueryCjInfoByCjId")
+        OkGo.<String>get(Urls.SERVER + "GDSTYF/QueryCjInfoByCjId")
                 .params("cjid", cjid)
                 .execute(new StringDialogCallback(Activity) {
                     @Override
@@ -38,7 +38,7 @@ public class UpDataFriendsPresenter extends BasePresenterImpl<UpDataFriendsContr
     }
     @Override
     public void upData(String json,  Activity Activity) {
-        OkGo.<String>post(Urls.SERVER + "SaveCjInfo")
+        OkGo.<String>post(Urls.SERVER + "GDSTYF/UptCjInfo")
                 .params("json", json)
                 .execute(new StringDialogCallback(Activity) {
                     @Override

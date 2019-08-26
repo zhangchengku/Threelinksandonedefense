@@ -22,12 +22,15 @@ public class SaveJson {
     private String wcpfm;
     private String wwcpfm;
     private String dywctz;
+
     private String ljdwzj;
+
     private String ljdwzyzj;
     private String ljdwstz;
     private String ljdwsjpt;
     private String ljdwxjpt;
     private String ljdwczjpt;
+
     private String ljwctz;
     private String ljwczytz;
     private String ljwcstz;
