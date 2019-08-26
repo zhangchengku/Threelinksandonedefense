@@ -1,4 +1,6 @@
 package com.threelinksandonedefense.myapplication;
 
-public class aaaaaaaa {
+import android.support.v7.app.AppCompatActivity;
+
+public class aaaaaaaa extends AppCompatActivity{
 }
